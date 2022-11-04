@@ -91,11 +91,16 @@ namespace CmisServer
             return get_RepositoryInfo(repositoryId);
         }
 
-        public override Result<CmisObjectModel.Core.Definitions.Types.cmisTypeDefinitionType> get_TypeDefinition(string repositoryId, string typeId)
+        public override Result<cmisTypeDefinitionType> GetTypeDefinition(string repositoryId, string typeId)
         {
-            Log_Internal("GetTypeDefinition", repositoryId);
+            Log_Internal("GetTypeDefinition", typeId);
 
-            return get_TypeDefinition(repositoryId, typeId);
+            return TypeDefinition(repositoryId, typeId);
+        }
+
+        public override cmisTypeDefinitionType TypeDefinition(string repositoryId, string typeId)
+        {
+            return TypeDefinition_Internal(typeId);
         }
 
         public override CmisObjectModel.Core.cmisRepositoryInfoType get_RepositoryInfo(string repositoryId)
@@ -124,7 +129,6 @@ namespace CmisServer
 
                 _repository.Capabilities = new cmisRepositoryCapabilitiesType();
                 _repository.Capabilities.CapabilityPWCUpdatable = true;
-                _repository.Capabilities.CapabilityQuery = enumCapabilityQuery.metadataonly;
             }
 
             return _repository;
@@ -133,14 +137,6 @@ namespace CmisServer
         #endregion
 
         #region TypeDefinition
-
-        public override Result<cmisTypeDefinitionType> GetTypeDefinition(string repositoryId, string typeId)
-        {
-            Log_Internal("GetTypeDefinition", typeId);
-
-            return GetTypeDefinition(repositoryId, typeId);
-        }
-
 
         protected override Result<cmisTypeDefinitionListType> GetTypeChildren(string repositoryId, string typeId, bool includePropertyDefinitions, long? maxItems, long? skipCount)
         {
@@ -157,7 +153,7 @@ namespace CmisServer
 
             if (string.IsNullOrEmpty(typeId))
             {
-                return new cmisTypeContainer() { Children = new cmisTypeContainer[] { new cmisTypeContainer() { Type = get_TypeDefinition_Internal("cmis:folder") }, new cmisTypeContainer() { Type = get_TypeDefinition_Internal("cmis:document") } } };
+                return new cmisTypeContainer() { Children = new cmisTypeContainer[] { new cmisTypeContainer() { Type = TypeDefinition_Internal("cmis:folder") }, new cmisTypeContainer() { Type = TypeDefinition_Internal("cmis:document") } } };
             }
             else
             {

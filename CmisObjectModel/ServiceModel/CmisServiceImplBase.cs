@@ -10,6 +10,7 @@ using cs = CmisObjectModel.ServiceModel;
 using Microsoft.VisualBasic.CompilerServices;
 using CmisObjectModel.Common;
 using CmisObjectModel.Common.Generic;
+using CmisObjectModel.Core.Definitions.Types;
 /* TODO ERROR: Skipped EndIfDirectiveTrivia
 #End If
 */
@@ -465,7 +466,6 @@ namespace CmisObjectModel.ServiceModel
         public abstract CmisObjectModel.Common.Generic.Result<CmisObjectModel.Core.cmisRepositoryInfoType> GetRepositoryInfo(string repositoryId);
         protected abstract CmisObjectModel.Common.Generic.Result<CmisObjectModel.Messaging.cmisTypeDefinitionListType> GetTypeChildren(string repositoryId, string typeId, bool includePropertyDefinitions, long? maxItems, long? skipCount);
         CmisObjectModel.Common.Generic.Result<CmisObjectModel.Messaging.cmisTypeDefinitionListType> CmisObjectModel.Contracts.ICmisServicesImpl.GetTypeChildren(string repositoryId, string typeId, bool includePropertyDefinitions, long? maxItems, long? skipCount) => GetTypeChildren(repositoryId, typeId, includePropertyDefinitions, maxItems, skipCount);
-        public abstract Common.Generic.Result<CmisObjectModel.Core.Definitions.Types.cmisTypeDefinitionType> GetTypeDefinition(string repositoryId, string typeId);
 
         protected abstract CmisObjectModel.Common.Generic.Result<CmisObjectModel.Messaging.cmisTypeContainer> GetTypeDescendants(string repositoryId, string typeId, bool includePropertyDefinitions, long? depth);
         CmisObjectModel.Common.Generic.Result<CmisObjectModel.Messaging.cmisTypeContainer> CmisObjectModel.Contracts.ICmisServicesImpl.GetTypeDescendants(string repositoryId, string typeId, bool includePropertyDefinitions, long? depth) => GetTypeDescendants(repositoryId, typeId, includePropertyDefinitions, depth);
@@ -765,7 +765,9 @@ namespace CmisObjectModel.ServiceModel
 
         public abstract CmisObjectModel.Core.cmisRepositoryInfoType get_RepositoryInfo(string repositoryId);
 
-        public abstract Result<CmisObjectModel.Core.Definitions.Types.cmisTypeDefinitionType> get_TypeDefinition(string repositoryId, string typeId);
+        public abstract Result<cmisTypeDefinitionType> GetTypeDefinition(string repositoryId, string typeId);
+
+        public abstract cmisTypeDefinitionType TypeDefinition(string repositoryId, string typeId);
 
         //bool CmisObjectModel.Contracts.ICmisServicesImpl.Exists { get => Exists; }
 

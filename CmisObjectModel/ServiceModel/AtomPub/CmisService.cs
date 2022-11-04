@@ -1254,7 +1254,7 @@ namespace CmisObjectModel.ServiceModel.AtomPub
 
             try
             {
-                result = serviceImpl.get_TypeDefinition(repositoryId, typeId);
+                result = serviceImpl.TypeDefinition(repositoryId, typeId);
 
                 if (result is null)
                 {
@@ -4953,7 +4953,7 @@ namespace CmisObjectModel.ServiceModel.AtomPub
                             }
                             else
                             {
-                                var typeDefinition = CmisServiceImpl.get_TypeDefinition(repositoryId, entry is null ? null : entry.TypeId).Success;
+                                var typeDefinition = CmisServiceImpl.TypeDefinition(repositoryId, entry is null ? null : entry.TypeId);
 
                                 if (typeDefinition is ccdt.cmisTypeDocumentDefinitionType)
                                 {
@@ -5227,7 +5227,8 @@ namespace CmisObjectModel.ServiceModel.AtomPub
             }
             else
             {
-                return (from item in (IEnumerable< AtomPubObjectGeneratingGuidance>)generatingGuidance.Objects
+
+                return (from item in (cmisObjectInFolderListType)generatingGuidance.Objects
                         let entry = CreateAtomEntry(generatingGuidance, item as Contracts.IServiceModelObject)
                         where entry is not null
                         select entry).ToList();

@@ -30,6 +30,7 @@ using ccdt = CmisObjectModel.Core.Definitions.Types;
 using cm = CmisObjectModel.Messaging;
 using cs = CmisObjectModel.ServiceModel;
 using CmisObjectModel.Common.Generic;
+using CmisObjectModel.Core.Definitions.Types;
 /* TODO ERROR: Skipped EndIfDirectiveTrivia
 #End If
 */
@@ -654,7 +655,9 @@ namespace CmisObjectModel.Contracts
         bool get_Exists(string repositoryId, string objectId);
 
         CmisObjectModel.Core.cmisRepositoryInfoType get_RepositoryInfo(string repositoryId);
-        Result<CmisObjectModel.Core.Definitions.Types.cmisTypeDefinitionType> get_TypeDefinition(string repositoryId, string typeId);
+        Result<cmisTypeDefinitionType> GetTypeDefinition(string repositoryId, string typeId);
+
+        cmisTypeDefinitionType TypeDefinition(string repositoryId, string typeId);
 
         /// <summary>
         /// Returns the BaseObjectType of cmisObject specified by objectId

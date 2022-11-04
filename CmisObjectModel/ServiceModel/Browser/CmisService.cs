@@ -765,7 +765,7 @@ namespace CmisObjectModel.ServiceModel.Browser
                 throw LogException(cm.cmisFaultType.CreateInvalidArgumentException("repositoryId"), serviceImpl);
             if (string.IsNullOrEmpty(typeId))
                 throw LogException(cm.cmisFaultType.CreateInvalidArgumentException("typeId"), serviceImpl);
-            result = serviceImpl.get_TypeDefinition(repositoryId, typeId);
+            result = serviceImpl.TypeDefinition(repositoryId, typeId);
 
             if (result is null)
             {
@@ -1129,7 +1129,7 @@ namespace CmisObjectModel.ServiceModel.Browser
             var bulkUpdate = new cc.cmisBulkUpdateType()
             {
                 AddSecondaryTypeIds = data.GetSecondaryTypeIds(JSON.Enums.enumCollectionAction.add),
-                Properties = data.GetProperties(typeId => serviceImpl.get_TypeDefinition(repositoryId, typeId).Success),
+                Properties = data.GetProperties(typeId => serviceImpl.TypeDefinition(repositoryId, typeId)),
                 RemoveSecondaryTypeIds = data.GetSecondaryTypeIds(JSON.Enums.enumCollectionAction.remove)
             };
             var objectIdAndChangeTokens = new List<cc.cmisObjectIdAndChangeTokenType>(length);
@@ -1189,7 +1189,7 @@ namespace CmisObjectModel.ServiceModel.Browser
                {
                    // at least the cmis:objectTypeId MUST be set
                    hasProperties = true;
-                   return serviceImpl.get_TypeDefinition(repositoryId, typeId).Success;
+                   return serviceImpl.TypeDefinition(repositoryId, typeId);
                });
             var versioningState = CommonFunctions.ParseEnum<cc.enumVersioningState>(data.ToString("versioningState"));
             var succinct = CommonFunctions.ParseBoolean(data.ToString("succinct"));
@@ -1232,7 +1232,7 @@ namespace CmisObjectModel.ServiceModel.Browser
             ccg.Result<cmisObjectType> result;
             var repositoryInfo = serviceImpl.GetRepositoryInfo(repositoryId).Success;
             var policyIds = data.GetAutoIndexedValues(JSON.Enums.enumValueType.policy);
-            var properties = data.GetProperties(typeId => serviceImpl.get_TypeDefinition(repositoryId, typeId).Success);
+            var properties = data.GetProperties(typeId => serviceImpl.TypeDefinition(repositoryId, typeId));
             string sourceId = data.ToString("sourceId");
             var succinct = CommonFunctions.ParseBoolean(data.ToString("succinct"));
             var versioningState = CommonFunctions.ParseEnum<cc.enumVersioningState>(data.ToString("versioningState"));
@@ -1277,7 +1277,7 @@ namespace CmisObjectModel.ServiceModel.Browser
                {
                    // at least the cmis:objectTypeId MUST be set
                    hasProperties = true;
-                   return serviceImpl.get_TypeDefinition(repositoryId, typeId).Success;
+                   return serviceImpl.TypeDefinition(repositoryId, typeId);
                });
             var succinct = CommonFunctions.ParseBoolean(data.ToString("succinct"));
 
@@ -1318,7 +1318,7 @@ namespace CmisObjectModel.ServiceModel.Browser
                {
                    // at least the cmis:objectTypeId MUST be set
                    hasProperties = true;
-                   return serviceImpl.get_TypeDefinition(repositoryId, typeId).Success;
+                   return serviceImpl.TypeDefinition(repositoryId, typeId);
                });
             var succinct = CommonFunctions.ParseBoolean(data.ToString("succinct"));
 
@@ -1363,7 +1363,7 @@ namespace CmisObjectModel.ServiceModel.Browser
                {
                    // at least the cmis:objectTypeId MUST be set
                    hasProperties = true;
-                   return serviceImpl.get_TypeDefinition(repositoryId, typeId).Success;
+                   return serviceImpl.TypeDefinition(repositoryId, typeId);
                });
             var succinct = CommonFunctions.ParseBoolean(data.ToString("succinct"));
 
@@ -1407,7 +1407,7 @@ namespace CmisObjectModel.ServiceModel.Browser
                {
                    // at least the cmis:objectTypeId MUST be set
                    hasProperties = true;
-                   return serviceImpl.get_TypeDefinition(repositoryId, typeId).Success;
+                   return serviceImpl.TypeDefinition(repositoryId, typeId);
                });
             var succinct = CommonFunctions.ParseBoolean(data.ToString("succinct"));
 
@@ -1896,7 +1896,7 @@ namespace CmisObjectModel.ServiceModel.Browser
             var succinct = CommonFunctions.ParseBoolean(data.ToString("succinct"));
 
             typeDefinitions = GetTypeDefinitions(serviceImpl, repositoryId, objectId);
-            properties = data.GetProperties(typeId => serviceImpl.get_TypeDefinition(repositoryId, typeId).Success, typeDefinitions);
+            properties = data.GetProperties(typeId => serviceImpl.TypeDefinition(repositoryId, typeId), typeDefinitions);
             // invalid arguments
             if (string.IsNullOrEmpty(repositoryId))
                 throw LogException(cm.cmisFaultType.CreateInvalidArgumentException("repositoryId"), serviceImpl);
@@ -2119,7 +2119,7 @@ namespace CmisObjectModel.ServiceModel.Browser
             var succinct = CommonFunctions.ParseBoolean(data.ToString("succinct"));
 
             typeDefinitions = GetTypeDefinitions(serviceImpl, repositoryId, objectId);
-            properties = data.GetProperties(typeId => serviceImpl.get_TypeDefinition(repositoryId, typeId).Success, typeDefinitions);
+            properties = data.GetProperties(typeId => serviceImpl.TypeDefinition(repositoryId, typeId), typeDefinitions);
             // invalid arguments
             if (string.IsNullOrEmpty(repositoryId))
                 throw LogException(cm.cmisFaultType.CreateInvalidArgumentException("repositoryId"), serviceImpl);
@@ -2674,7 +2674,7 @@ namespace CmisObjectModel.ServiceModel.Browser
                         {
                             foreach (string typeId in typeIds)
                             {
-                                var typeDefinition = serviceImpl.get_TypeDefinition(repositoryId, typeId).Success;
+                                var typeDefinition = serviceImpl.TypeDefinition(repositoryId, typeId);
                                 if (typeDefinition is not null)
                                     typeDefinitions.Add(typeDefinition);
                             }

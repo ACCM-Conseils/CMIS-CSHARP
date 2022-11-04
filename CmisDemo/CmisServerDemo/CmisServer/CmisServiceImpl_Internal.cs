@@ -92,7 +92,7 @@ namespace CmisServer
 
         #region TypeDefinition
 
-        public CmisObjectModel.Core.Definitions.Types.cmisTypeDefinitionType get_TypeDefinition_Internal(string typeId)
+        public CmisObjectModel.Core.Definitions.Types.cmisTypeDefinitionType TypeDefinition_Internal(string typeId)
         {
             string filename = Helper.FindXmlPath(typeId.Replace(":", "_") + ".xml");
             var reader = System.Xml.XmlReader.Create(filename);
