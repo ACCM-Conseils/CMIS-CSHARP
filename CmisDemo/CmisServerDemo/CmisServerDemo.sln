@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.421
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32922.545
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "RunServer", "RunServer\RunServer.vbproj", "{FBCB99C1-6606-46A7-A044-63D175ED20BB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunServer", "RunServer\RunServer.csproj", "{49EF18AA-AA5E-0956-221C-A9AF177A141B}"
 EndProject
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "CmisServer", "CmisServer\CmisServer.vbproj", "{A61B1EC2-14F8-4C53-B853-D527D71E4A89}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CmisServer", "CmisServer\CmisServer.csproj", "{143F9FA9-D8A0-03A2-3A0B-1F59B5897E29}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Xml-Templates", "Xml-Templates", "{F06F0C90-D0B9-4D2F-8914-E42A4F408F21}"
 	ProjectSection(SolutionItems) = preProject
@@ -15,7 +15,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Xml-Templates", "Xml-Templa
 		Xml\folder.xml = Xml\folder.xml
 	EndProjectSection
 EndProject
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "WebServer", "WebServer\WebServer.vbproj", "{B58968A0-D8B3-4504-A8F7-9A70E3900625}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebServer", "WebServer\WebServer.csproj", "{07ADE9CB-14EB-0AF5-2AAF-500E81073285}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CmisObjectModel", "..\..\CmisObjectModel\CmisObjectModel.csproj", "{ACB4AA6E-0A8C-05C8-3F77-5DF85D09B020}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,18 +25,22 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{FBCB99C1-6606-46A7-A044-63D175ED20BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FBCB99C1-6606-46A7-A044-63D175ED20BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FBCB99C1-6606-46A7-A044-63D175ED20BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FBCB99C1-6606-46A7-A044-63D175ED20BB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A61B1EC2-14F8-4C53-B853-D527D71E4A89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A61B1EC2-14F8-4C53-B853-D527D71E4A89}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A61B1EC2-14F8-4C53-B853-D527D71E4A89}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A61B1EC2-14F8-4C53-B853-D527D71E4A89}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B58968A0-D8B3-4504-A8F7-9A70E3900625}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B58968A0-D8B3-4504-A8F7-9A70E3900625}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B58968A0-D8B3-4504-A8F7-9A70E3900625}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B58968A0-D8B3-4504-A8F7-9A70E3900625}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49EF18AA-AA5E-0956-221C-A9AF177A141B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49EF18AA-AA5E-0956-221C-A9AF177A141B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49EF18AA-AA5E-0956-221C-A9AF177A141B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49EF18AA-AA5E-0956-221C-A9AF177A141B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{143F9FA9-D8A0-03A2-3A0B-1F59B5897E29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{143F9FA9-D8A0-03A2-3A0B-1F59B5897E29}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{143F9FA9-D8A0-03A2-3A0B-1F59B5897E29}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{143F9FA9-D8A0-03A2-3A0B-1F59B5897E29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{07ADE9CB-14EB-0AF5-2AAF-500E81073285}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07ADE9CB-14EB-0AF5-2AAF-500E81073285}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07ADE9CB-14EB-0AF5-2AAF-500E81073285}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07ADE9CB-14EB-0AF5-2AAF-500E81073285}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACB4AA6E-0A8C-05C8-3F77-5DF85D09B020}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACB4AA6E-0A8C-05C8-3F77-5DF85D09B020}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACB4AA6E-0A8C-05C8-3F77-5DF85D09B020}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACB4AA6E-0A8C-05C8-3F77-5DF85D09B020}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

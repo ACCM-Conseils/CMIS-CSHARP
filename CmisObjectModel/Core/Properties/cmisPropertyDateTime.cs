@@ -1,0 +1,58 @@
+﻿using System;
+using sxs = System.Xml.Serialization;
+
+namespace CmisObjectModel.Core.Properties
+{
+    [sxs.XmlRoot(DefaultElementName, Namespace = Constants.Namespaces.cmis)]
+    [Attributes.CmisTypeInfo(CmisTypeName, TargetTypeName, DefaultElementName)]
+    public partial class cmisPropertyDateTime
+    {
+
+        public cmisPropertyDateTime(string propertyDefinitionId, string localName, string displayName, string queryName, params DateTimeOffset[] values) : base(propertyDefinitionId, localName, displayName, queryName, values)
+        {
+        }
+
+        #region Constants
+        public const string CmisTypeName = "cmis:cmisPropertyDateTime";
+        public const string TargetTypeName = "datetime";
+        public const string DefaultElementName = "propertyDateTime";
+        #endregion
+
+        #region IComparable
+        protected override int CompareTo(params DateTimeOffset[] other)
+        {
+            int length = _values is null ? 0 : _values.Length;
+            int otherLength = other is null ? 0 : other.Length;
+
+            if (otherLength == 0)
+            {
+                return length == 0 ? 0 : 1;
+            }
+            else if (length == 0)
+            {
+                return -1;
+            }
+            else
+            {
+                for (int index = 0, loopTo = Math.Min(length, otherLength) - 1; index <= loopTo; index++)
+                {
+                    int result = DateTimeOffset.Compare(_values[index], other[index]);
+
+                    if (result != 0)
+                        return result;
+                }
+                return length == otherLength ? 0 : length > otherLength ? 1 : -1;
+            }
+        }
+        #endregion
+
+        public override enumPropertyType Type
+        {
+            get
+            {
+                return enumPropertyType.datetime;
+            }
+        }
+
+    }
+}

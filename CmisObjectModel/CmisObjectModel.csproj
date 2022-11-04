@@ -1,0 +1,1173 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>
+    </SchemaVersion>
+    <ProjectGuid>{ACB4AA6E-0A8C-05C8-3F77-5DF85D09B020}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>
+    </RootNamespace>
+    <AssemblyName>BS.Cmis</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <MyType>Windows</MyType>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <DefaultItemExcludes>$(DefaultItemExcludes);$(ProjectDir)**\*.vb</DefaultItemExcludes>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DocumentationFile>bin\Debug\BS.Cmis.xml</DocumentationFile>
+    <NoWarn>
+    </NoWarn>
+    <DefineConstants>xs_Integer="Int64"; EnableExceptionLogging="True"</DefineConstants>
+    <DefineConstants Condition="$([System.Version]::Parse('$(TargetFrameworkVersion.Substring(1))').CompareTo($([System.Version]::Parse('4.0')))) &gt;= 0">$(DefineConstants), xs_HttpRequestAddRange64</DefineConstants>
+    <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DocumentationFile>bin\Release\BS.Cmis.xml</DocumentationFile>
+    <NoWarn>
+    </NoWarn>
+    <DefineConstants>xs_Integer="Int64", EnableExceptionLogging="True"</DefineConstants>
+    <DefineConstants Condition="$([System.Version]::Parse('$(TargetFrameworkVersion.Substring(1))').CompareTo($([System.Version]::Parse('4.0')))) &gt;= 0">$(DefineConstants), xs_HttpRequestAddRange64</DefineConstants>
+    <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionExplicit>On</OptionExplicit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionCompare>Binary</OptionCompare>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionStrict>On</OptionStrict>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionInfer>On</OptionInfer>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Collections.Immutable, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Collections.Immutable.6.0.0\lib\net461\System.Collections.Immutable.dll</HintPath>
+    </Reference>
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.IdentityModel" />
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Runtime.CompilerServices.Unsafe.6.0.0\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Web" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Import Include="Microsoft.VisualBasic" />
+    <Import Include="System" />
+    <Import Include="System.Collections" />
+    <Import Include="System.Collections.Generic" />
+    <Import Include="System.Data" />
+    <Import Include="System.Diagnostics" />
+    <Import Include="System.Linq" />
+    <Import Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="My Project\MyNamespace.Static.1.Designer.cs" />
+    <Compile Include="My Project\MyNamespace.Static.2.Designer.cs" />
+    <Compile Include="My Project\MyNamespace.Static.3.Designer.cs" />
+    <Compile Include="AtomPub\AtomCollectionInfo.cs" />
+    <Compile Include="AtomPub\AtomEntry.cs" />
+    <Compile Include="AtomPub\AtomEntryCollector.cs" />
+    <Compile Include="AtomPub\AtomFeed.cs" />
+    <Compile Include="AtomPub\AtomLink.cs" />
+    <Compile Include="AtomPub\AtomServiceDocument.cs" />
+    <Compile Include="AtomPub\AtomWorkspace.cs" />
+    <Compile Include="AtomPub\Factory.cs" />
+    <Compile Include="Attributes\AutoGeneratedAttribute.cs" />
+    <Compile Include="Attributes\CmisObjectAttribute.cs" />
+    <Compile Include="Attributes\CmisTypeInfoAttribute.cs" />
+    <Compile Include="Attributes\DynamicTypeDescriptor.cs" />
+    <Compile Include="Attributes\JavaScriptConverterAttribute.cs" />
+    <Compile Include="Attributes\JavaScriptObjectResolverAttribute.cs" />
+    <Compile Include="Client\AtomPub\CmisClient.cs" />
+    <Compile Include="Client\AuthenticationProvider.cs" />
+    <Compile Include="Client\Base\CmisClient.cs" />
+    <Compile Include="Client\Browser\CmisClient.cs" />
+    <Compile Include="Client\Browser\SuccinctSupport.cs" />
+    <Compile Include="Client\Browser\TokenGenerator.cs" />
+    <Compile Include="Client\CmisDataModelObject.cs" />
+    <Compile Include="Client\CmisDocument.cs" />
+    <Compile Include="Client\CmisFolder.cs" />
+    <Compile Include="Client\CmisObject.cs" />
+    <Compile Include="Client\CmisPolicy.cs" />
+    <Compile Include="Client\CmisRelationship.cs" />
+    <Compile Include="Client\CmisRepository.cs" />
+    <Compile Include="Client\CmisService.cs" />
+    <Compile Include="Client\CmisType.cs" />
+    <Compile Include="Client\Factory.cs" />
+    <Compile Include="Client\Generic\ItemContainer.cs" />
+    <Compile Include="Client\Generic\ItemList.cs" />
+    <Compile Include="Client\Generic\Response.cs" />
+    <Compile Include="Client\NtlmAuthenticationProvider.cs" />
+    <Compile Include="Client\Response.cs" />
+    <Compile Include="Client\Vendors\Agorum.cs" />
+    <Compile Include="Client\Vendors\Alfresco.cs" />
+    <Compile Include="Client\Vendors\Vendor.cs" />
+    <Compile Include="Collections\Generic\ArrayContainer.cs" />
+    <Compile Include="Collections\Generic\ArrayMapper.cs" />
+    <Compile Include="Collections\Generic\Cache.cs" />
+    <Compile Include="Collections\Generic\DictionaryTree.cs" />
+    <Compile Include="Collections\Generic\Tree.cs" />
+    <Compile Include="Collections\HttpCookieContainer.cs" />
+    <Compile Include="Common\AppSettings.cs" />
+    <Compile Include="Common\AuthenticationInfo.cs" />
+    <Compile Include="Common\CommonFunctions.cs" />
+    <Compile Include="Common\Enums.cs" />
+    <Compile Include="Common\GenericRuntimeHelper.cs" />
+    <Compile Include="Common\Generic\DynamicProperty.cs" />
+    <Compile Include="Common\Generic\Factory.cs" />
+    <Compile Include="Common\Generic\LinkUriBuilder.cs" />
+    <Compile Include="Common\Generic\Nullable.cs" />
+    <Compile Include="Common\Generic\Result.cs" />
+    <Compile Include="Common\Generic\TreeEntryCollector.cs" />
+    <Compile Include="Common\HttpCookie.cs" />
+    <Compile Include="Common\PredefinedPropertyDefinitionFactory.cs" />
+    <Compile Include="Common\RenditionFilter.cs" />
+    <Compile Include="Common\RFC2231Helper.cs" />
+    <Compile Include="ComponentModel\PropertyChangedEventArgs.cs" />
+    <Compile Include="Constants\Constants.cs" />
+    <Compile Include="Constants\JSONConstants.cs" />
+    <Compile Include="Constants\LinkRelationshipTypes.cs" />
+    <Compile Include="Constants\ServiceURIs.cs" />
+    <Compile Include="Contracts\IAtomPubBinding.cs" />
+    <Compile Include="Contracts\IBrowserBinding.cs" />
+    <Compile Include="Contracts\ICmisClient.cs" />
+    <Compile Include="Contracts\ICmisServicesImpl.cs" />
+    <Compile Include="Contracts\IJavaSerializationProvider.cs" />
+    <Compile Include="Contracts\IPropertyDefinition.cs" />
+    <Compile Include="Contracts\IServiceModelObject.cs" />
+    <Compile Include="Contracts\IServiceModelObjectEnumerable.cs" />
+    <Compile Include="Core\Choices\cmisChoice.Designer.cs">
+      <DependentUpon>cmisChoice.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Choices\cmisChoice.cs" />
+    <Compile Include="Core\Choices\cmisChoiceBoolean.Designer.cs">
+      <DependentUpon>cmisChoiceBoolean.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Choices\cmisChoiceBoolean.cs" />
+    <Compile Include="Core\Choices\cmisChoiceDateTime.Designer.cs">
+      <DependentUpon>cmisChoiceDateTime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Choices\cmisChoiceDateTime.cs" />
+    <Compile Include="Core\Choices\cmisChoiceDecimal.Designer.cs">
+      <DependentUpon>cmisChoiceDecimal.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Choices\cmisChoiceDecimal.cs" />
+    <Compile Include="Core\Choices\cmisChoiceDouble.cs" />
+    <Compile Include="Core\Choices\cmisChoiceHtml.Designer.cs">
+      <DependentUpon>cmisChoiceHtml.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Choices\cmisChoiceHtml.cs" />
+    <Compile Include="Core\Choices\cmisChoiceId.Designer.cs">
+      <DependentUpon>cmisChoiceId.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Choices\cmisChoiceId.cs" />
+    <Compile Include="Core\Choices\cmisChoiceInteger.Designer.cs">
+      <DependentUpon>cmisChoiceInteger.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Choices\cmisChoiceInteger.cs" />
+    <Compile Include="Core\Choices\cmisChoiceString.Designer.cs">
+      <DependentUpon>cmisChoiceString.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Choices\cmisChoiceString.cs" />
+    <Compile Include="Core\Choices\cmisChoiceUri.Designer.cs">
+      <DependentUpon>cmisChoiceUri.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Choices\cmisChoiceUri.cs" />
+    <Compile Include="Core\cmisAllowableActionsType.Designer.cs">
+      <DependentUpon>cmisAllowableActionsType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\cmisAllowableActionsType.cs" />
+    <Compile Include="Core\cmisBulkUpdateType.Designer.cs">
+      <DependentUpon>cmisBulkUpdateType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\cmisBulkUpdateType.cs" />
+    <Compile Include="Core\cmisChangeEventType.Designer.cs">
+      <DependentUpon>cmisChangeEventType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\cmisChangeEventType.cs" />
+    <Compile Include="Core\cmisCreatablePropertyTypesType.Designer.cs">
+      <DependentUpon>cmisCreatablePropertyTypesType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\cmisCreatablePropertyTypesType.cs" />
+    <Compile Include="Core\cmisExtensionFeatureKeyValuePair.Designer.cs">
+      <DependentUpon>cmisExtensionFeatureKeyValuePair.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\cmisExtensionFeatureKeyValuePair.cs" />
+    <Compile Include="Core\cmisExtensionFeatureType.Designer.cs">
+      <DependentUpon>cmisExtensionFeatureType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\cmisExtensionFeatureType.cs" />
+    <Compile Include="Core\cmisNewTypeSettableAttributes.Designer.cs">
+      <DependentUpon>cmisNewTypeSettableAttributes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\cmisNewTypeSettableAttributes.cs" />
+    <Compile Include="Core\cmisObjectIdAndChangeTokenType.Designer.cs">
+      <DependentUpon>cmisObjectIdAndChangeTokenType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\cmisObjectIdAndChangeTokenType.cs" />
+    <Compile Include="Core\cmisObjectType.Designer.cs">
+      <DependentUpon>cmisObjectType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\cmisObjectType.cs" />
+    <Compile Include="Core\cmisQueryType.Designer.cs">
+      <DependentUpon>cmisQueryType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\cmisQueryType.cs" />
+    <Compile Include="Core\cmisRenditionType.Designer.cs">
+      <DependentUpon>cmisRenditionType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\cmisRenditionType.cs" />
+    <Compile Include="Core\cmisRepositoryCapabilitiesType.Designer.cs">
+      <DependentUpon>cmisRepositoryCapabilitiesType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\cmisRepositoryCapabilitiesType.cs" />
+    <Compile Include="Core\cmisRepositoryInfoType.Designer.cs">
+      <DependentUpon>cmisRepositoryInfoType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\cmisRepositoryInfoType.cs" />
+    <Compile Include="Core\cmisTypeMutabilityCapabilitiesType.Designer.cs">
+      <DependentUpon>cmisTypeMutabilityCapabilitiesType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\cmisTypeMutabilityCapabilitiesType.cs" />
+    <Compile Include="Core\Collections\cmisListOfIdsType.Designer.cs">
+      <DependentUpon>cmisListOfIdsType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Collections\cmisListOfIdsType.cs" />
+    <Compile Include="Core\Collections\cmisPropertiesType.Designer.cs">
+      <DependentUpon>cmisPropertiesType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Collections\cmisPropertiesType.cs" />
+    <Compile Include="Core\Definitions\DefinitionBase.cs" />
+    <Compile Include="Core\Definitions\Properties\cmisPropertyBooleanDefinitionType.Designer.cs">
+      <DependentUpon>cmisPropertyBooleanDefinitionType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Definitions\Properties\cmisPropertyBooleanDefinitionType.cs" />
+    <Compile Include="Core\Definitions\Properties\cmisPropertyDateTimeDefinitionType.Designer.cs">
+      <DependentUpon>cmisPropertyDateTimeDefinitionType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Definitions\Properties\cmisPropertyDateTimeDefinitionType.cs" />
+    <Compile Include="Core\Definitions\Properties\cmisPropertyDecimalDefinitionType.Designer.cs">
+      <DependentUpon>cmisPropertyDecimalDefinitionType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Definitions\Properties\cmisPropertyDecimalDefinitionType.cs" />
+    <Compile Include="Core\Definitions\Properties\cmisPropertyDefinitionType.Designer.cs">
+      <DependentUpon>cmisPropertyDefinitionType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Definitions\Properties\cmisPropertyDefinitionType.cs" />
+    <Compile Include="Core\Definitions\Properties\cmisPropertyDoubleDefinitionType.cs" />
+    <Compile Include="Core\Definitions\Properties\cmisPropertyHtmlDefinitionType.Designer.cs">
+      <DependentUpon>cmisPropertyHtmlDefinitionType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Definitions\Properties\cmisPropertyHtmlDefinitionType.cs" />
+    <Compile Include="Core\Definitions\Properties\cmisPropertyIdDefinitionType.Designer.cs">
+      <DependentUpon>cmisPropertyIdDefinitionType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Definitions\Properties\cmisPropertyIdDefinitionType.cs" />
+    <Compile Include="Core\Definitions\Properties\cmisPropertyIntegerDefinitionType.Designer.cs">
+      <DependentUpon>cmisPropertyIntegerDefinitionType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Definitions\Properties\cmisPropertyIntegerDefinitionType.cs" />
+    <Compile Include="Core\Definitions\Properties\cmisPropertyStringDefinitionType.Designer.cs">
+      <DependentUpon>cmisPropertyStringDefinitionType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Definitions\Properties\cmisPropertyStringDefinitionType.cs" />
+    <Compile Include="Core\Definitions\Properties\cmisPropertyUriDefinitionType.Designer.cs">
+      <DependentUpon>cmisPropertyUriDefinitionType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Definitions\Properties\cmisPropertyUriDefinitionType.cs" />
+    <Compile Include="Core\Definitions\Types\cmisTypeRM_RepMgtRetentionDefinitionType.Designer.cs">
+      <DependentUpon>cmisTypeRM_RepMgtRetentionDefinitionType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Definitions\Types\cmisTypeRM_DestructionRetentionDefinitionType.Designer.cs">
+      <DependentUpon>cmisTypeRM_DestructionRetentionDefinitionType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Definitions\Types\cmisTypeRM_ClientMgtRetentionDefinitionType.Designer.cs">
+      <DependentUpon>cmisTypeRM_ClientMgtRetentionDefinitionType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Definitions\Types\cmisTypeRM_HoldDefinitionType.Designer.cs">
+      <DependentUpon>cmisTypeRM_HoldDefinitionType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Definitions\Types\cmisTypeDefinitionType.Designer.cs">
+      <DependentUpon>cmisTypeDefinitionType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Definitions\Types\cmisTypeDefinitionType.cs" />
+    <Compile Include="Core\Definitions\Types\cmisTypeDocumentDefinitionType.Designer.cs">
+      <DependentUpon>cmisTypeDocumentDefinitionType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Definitions\Types\cmisTypeDocumentDefinitionType.cs" />
+    <Compile Include="Core\Definitions\Types\cmisTypeFolderDefinitionType.Designer.cs">
+      <DependentUpon>cmisTypeFolderDefinitionType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Definitions\Types\cmisTypeFolderDefinitionType.cs" />
+    <Compile Include="Core\Definitions\Types\cmisTypeItemDefinitionType.Designer.cs">
+      <DependentUpon>cmisTypeItemDefinitionType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Definitions\Types\cmisTypeItemDefinitionType.cs" />
+    <Compile Include="Core\Definitions\Types\cmisTypePolicyDefinitionType.Designer.cs">
+      <DependentUpon>cmisTypePolicyDefinitionType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Definitions\Types\cmisTypePolicyDefinitionType.cs" />
+    <Compile Include="Core\Definitions\Types\cmisTypeRelationshipDefinitionType.Designer.cs">
+      <DependentUpon>cmisTypeRelationshipDefinitionType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Definitions\Types\cmisTypeRelationshipDefinitionType.cs" />
+    <Compile Include="Core\Definitions\Types\cmisTypeRM_ClientMgtRetentionDefinitionType.cs" />
+    <Compile Include="Core\Definitions\Types\cmisTypeRM_DestructionRetentionDefinitionType.cs" />
+    <Compile Include="Core\Definitions\Types\cmisTypeRM_HoldDefinitionType.cs" />
+    <Compile Include="Core\Definitions\Types\cmisTypeRM_RepMgtRetentionDefinitionType.cs" />
+    <Compile Include="Core\Definitions\Types\cmisTypeSecondaryDefinitionType.Designer.cs">
+      <DependentUpon>cmisTypeSecondaryDefinitionType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Definitions\Types\cmisTypeSecondaryDefinitionType.cs" />
+    <Compile Include="Core\Enums.Designer.cs">
+      <DependentUpon>Enums.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Enums.cs" />
+    <Compile Include="Core\Properties\cmisProperty.Designer.cs">
+      <DependentUpon>cmisProperty.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Properties\cmisProperty.cs" />
+    <Compile Include="Core\Properties\cmisPropertyBoolean.Designer.cs">
+      <DependentUpon>cmisPropertyBoolean.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Properties\cmisPropertyBoolean.cs" />
+    <Compile Include="Core\Properties\cmisPropertyDateTime.Designer.cs">
+      <DependentUpon>cmisPropertyDateTime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Properties\cmisPropertyDateTime.cs" />
+    <Compile Include="Core\Properties\cmisPropertyDecimal.Designer.cs">
+      <DependentUpon>cmisPropertyDecimal.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Properties\cmisPropertyDecimal.cs" />
+    <Compile Include="Core\Properties\cmisPropertyDouble.cs" />
+    <Compile Include="Core\Properties\cmisPropertyHtml.Designer.cs">
+      <DependentUpon>cmisPropertyHtml.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Properties\cmisPropertyHtml.cs" />
+    <Compile Include="Core\Properties\cmisPropertyId.Designer.cs">
+      <DependentUpon>cmisPropertyId.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Properties\cmisPropertyId.cs" />
+    <Compile Include="Core\Properties\cmisPropertyInteger.Designer.cs">
+      <DependentUpon>cmisPropertyInteger.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Properties\cmisPropertyInteger.cs" />
+    <Compile Include="Core\Properties\cmisPropertyObject.cs" />
+    <Compile Include="Core\Properties\cmisPropertyString.Designer.cs">
+      <DependentUpon>cmisPropertyString.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Properties\cmisPropertyString.cs" />
+    <Compile Include="Core\Properties\cmisPropertyUri.Designer.cs">
+      <DependentUpon>cmisPropertyUri.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Properties\cmisPropertyUri.cs" />
+    <Compile Include="Core\Security\cmisAccessControlEntryType.Designer.cs">
+      <DependentUpon>cmisAccessControlEntryType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Security\cmisAccessControlEntryType.cs" />
+    <Compile Include="Core\Security\cmisAccessControlListType.Designer.cs">
+      <DependentUpon>cmisAccessControlListType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Security\cmisAccessControlListType.cs" />
+    <Compile Include="Core\Security\cmisAccessControlPrincipalType.Designer.cs">
+      <DependentUpon>cmisAccessControlPrincipalType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Security\cmisAccessControlPrincipalType.cs" />
+    <Compile Include="Core\Security\cmisACLCapabilityType.Designer.cs">
+      <DependentUpon>cmisACLCapabilityType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Security\cmisACLCapabilityType.cs" />
+    <Compile Include="Core\Security\cmisPermissionDefinition.Designer.cs">
+      <DependentUpon>cmisPermissionDefinition.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Security\cmisPermissionDefinition.cs" />
+    <Compile Include="Core\Security\cmisPermissionMapping.Designer.cs">
+      <DependentUpon>cmisPermissionMapping.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Security\cmisPermissionMapping.cs" />
+    <Compile Include="Data\Mapper.cs" />
+    <Compile Include="Data\MapperDictionary.cs" />
+    <Compile Include="Data\PropertyValueConverter.cs" />
+    <Compile Include="EventBus\Backbone.cs" />
+    <Compile Include="EventBus\Enums.cs" />
+    <Compile Include="EventBus\EventArgs.cs" />
+    <Compile Include="EventBus\BuildInEventNames.cs" />
+    <Compile Include="EventBus\WeakListener.cs" />
+    <Compile Include="Extensions\Alfresco\Aspects.cs" />
+    <Compile Include="Extensions\Alfresco\MandatoryAspects.cs" />
+    <Compile Include="Extensions\Alfresco\SetAspects.cs" />
+    <Compile Include="Extensions\Common\NewIdExtension.cs" />
+    <Compile Include="Extensions\Data\ConverterDefinition.cs" />
+    <Compile Include="Extensions\Data\ConverterDefinitionItem.cs" />
+    <Compile Include="Extensions\Data\Row.cs" />
+    <Compile Include="Extensions\Data\RowCollection.cs" />
+    <Compile Include="Extensions\Extension.cs" />
+    <Compile Include="JSON\Collections\Properties.cs" />
+    <Compile Include="JSON\Collections\PropertiesConverter.cs" />
+    <Compile Include="JSON\Collections\SuccinctProperties.cs" />
+    <Compile Include="JSON\Collections\SuccinctPropertiesConverter.cs" />
+    <Compile Include="JSON\Core\Choices\cmisChoiceConverter.cs" />
+    <Compile Include="JSON\Core\cmisAllowableActionsTypeConverter.Designer.cs">
+      <DependentUpon>cmisAllowableActionsTypeConverter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="JSON\Core\cmisAllowableActionsTypeConverter.cs" />
+    <Compile Include="JSON\Core\cmisChangeEventTypeConverter.Designer.cs">
+      <DependentUpon>cmisChangeEventTypeConverter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="JSON\Core\cmisChangeEventTypeConverter.cs" />
+    <Compile Include="JSON\Core\cmisCreatablePropertyTypesTypeConverter.Designer.cs">
+      <DependentUpon>cmisCreatablePropertyTypesTypeConverter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="JSON\Core\cmisCreatablePropertyTypesTypeConverter.cs" />
+    <Compile Include="JSON\Core\cmisExtensionFeatureTypeConverter.cs" />
+    <Compile Include="JSON\Core\cmisNewTypeSettableAttributesConverter.Designer.cs">
+      <DependentUpon>cmisNewTypeSettableAttributesConverter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="JSON\Core\cmisNewTypeSettableAttributesConverter.cs" />
+    <Compile Include="JSON\Core\cmisObjectIdAndChangeTokenTypeConverter.Designer.cs">
+      <DependentUpon>cmisObjectIdAndChangeTokenTypeConverter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="JSON\Core\cmisObjectIdAndChangeTokenTypeConverter.cs" />
+    <Compile Include="JSON\Core\cmisObjectTypeConverter.Designer.cs">
+      <DependentUpon>cmisObjectTypeConverter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="JSON\Core\cmisObjectTypeConverter.cs" />
+    <Compile Include="JSON\Core\cmisRenditionTypeConverter.Designer.cs">
+      <DependentUpon>cmisRenditionTypeConverter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="JSON\Core\cmisRenditionTypeConverter.cs" />
+    <Compile Include="JSON\Core\cmisRepositoryCapabilitiesTypeConverter.Designer.cs">
+      <DependentUpon>cmisRepositoryCapabilitiesTypeConverter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="JSON\Core\cmisRepositoryCapabilitiesTypeConverter.cs" />
+    <Compile Include="JSON\Core\cmisRepositoryInfoTypeConverter.Designer.cs">
+      <DependentUpon>cmisRepositoryInfoTypeConverter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="JSON\Core\cmisRepositoryInfoTypeConverter.cs" />
+    <Compile Include="JSON\Core\cmisTypeMutabilityCapabilitiesTypeConverter.Designer.cs">
+      <DependentUpon>cmisTypeMutabilityCapabilitiesTypeConverter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="JSON\Core\cmisTypeMutabilityCapabilitiesTypeConverter.cs" />
+    <Compile Include="JSON\Core\Collections\cmisListOfIdsTypeConverter.Designer.cs">
+      <DependentUpon>cmisListOfIdsTypeConverter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="JSON\Core\Collections\cmisListOfIdsTypeConverter.cs" />
+    <Compile Include="JSON\Core\Definitions\Properties\cmisPropertyDateTimeDefinitionTypeConverter.cs" />
+    <Compile Include="JSON\Core\Definitions\Properties\cmisPropertyDecimalDefinitionTypeConverter.cs" />
+    <Compile Include="JSON\Core\Definitions\Properties\cmisPropertyDefinitionTypeConverter.cs" />
+    <Compile Include="JSON\Core\Definitions\Properties\cmisPropertyDoubleDefinitionTypeConverter.cs" />
+    <Compile Include="JSON\Core\Definitions\Properties\cmisPropertyIntegerDefinitionTypeConverter.cs" />
+    <Compile Include="JSON\Core\Definitions\Properties\cmisPropertyStringDefinitionTypeConverter.cs" />
+    <Compile Include="JSON\Core\Definitions\Types\cmisTypeDefinitionTypeConverter.cs" />
+    <Compile Include="JSON\Core\Properties\cmisPropertyConverter.cs" />
+    <Compile Include="JSON\Core\Properties\PropertyConverter.cs" />
+    <Compile Include="JSON\Core\Properties\QueryPropertyConverter.cs" />
+    <Compile Include="JSON\Core\QueryResultConverter.cs" />
+    <Compile Include="JSON\Core\Security\cmisAccessControlEntryTypeConverter.cs" />
+    <Compile Include="JSON\Core\Security\cmisAccessControlListTypeConverter.cs" />
+    <Compile Include="JSON\Core\Security\cmisAccessControlPrincipalTypeConverter.cs" />
+    <Compile Include="JSON\Core\Security\cmisACLCapabilityTypeConverter.Designer.cs">
+      <DependentUpon>cmisACLCapabilityTypeConverter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="JSON\Core\Security\cmisACLCapabilityTypeConverter.cs" />
+    <Compile Include="JSON\Core\Security\cmisPermissionDefinitionConverter.Designer.cs">
+      <DependentUpon>cmisPermissionDefinitionConverter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="JSON\Core\Security\cmisPermissionDefinitionConverter.cs" />
+    <Compile Include="JSON\Core\Security\cmisPermissionMappingConverter.Designer.cs">
+      <DependentUpon>cmisPermissionMappingConverter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="JSON\Core\Security\cmisPermissionMappingConverter.cs" />
+    <Compile Include="JSON\Enums.cs" />
+    <Compile Include="JSON\Extensions\Alfresco\AspectsConverter.cs" />
+    <Compile Include="JSON\Extensions\Alfresco\SetAspectsConverter.cs" />
+    <Compile Include="JSON\Extensions\Data\ConverterDefinitionConverter.cs" />
+    <Compile Include="JSON\Extensions\Data\RowCollectionConverter.cs" />
+    <Compile Include="JSON\Extensions\Data\RowConverter.cs" />
+    <Compile Include="JSON\HttpContent.cs" />
+    <Compile Include="JSON\Messaging\cmisFaultTypeConverter.cs" />
+    <Compile Include="JSON\Messaging\cmisObjectInFolderContainerTypeConverter.Designer.cs">
+      <DependentUpon>cmisObjectInFolderContainerTypeConverter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="JSON\Messaging\cmisObjectInFolderContainerTypeConverter.cs" />
+    <Compile Include="JSON\Messaging\cmisObjectInFolderListTypeConverter.Designer.cs">
+      <DependentUpon>cmisObjectInFolderListTypeConverter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="JSON\Messaging\cmisObjectInFolderListTypeConverter.cs" />
+    <Compile Include="JSON\Messaging\cmisObjectInFolderTypeConverter.Designer.cs">
+      <DependentUpon>cmisObjectInFolderTypeConverter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="JSON\Messaging\cmisObjectInFolderTypeConverter.cs" />
+    <Compile Include="JSON\Messaging\cmisObjectParentsTypeConverter.Designer.cs">
+      <DependentUpon>cmisObjectParentsTypeConverter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="JSON\Messaging\cmisObjectParentsTypeConverter.cs" />
+    <Compile Include="JSON\Messaging\cmisTypeContainerConverter.Designer.cs">
+      <DependentUpon>cmisTypeContainerConverter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="JSON\Messaging\cmisTypeContainerConverter.cs" />
+    <Compile Include="JSON\Messaging\cmisTypeDefinitionListTypeConverter.Designer.cs">
+      <DependentUpon>cmisTypeDefinitionListTypeConverter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="JSON\Messaging\cmisTypeDefinitionListTypeConverter.cs" />
+    <Compile Include="JSON\Messaging\ObjectListConverter.cs" />
+    <Compile Include="JSON\Messaging\QueryResultListConverter.cs" />
+    <Compile Include="JSON\Messaging\RequestBase.cs" />
+    <Compile Include="JSON\MultipartFormDataContent.cs" />
+    <Compile Include="JSON\Serialization\JavaScriptConverter.cs" />
+    <Compile Include="JSON\Serialization\JavaScriptSerializer.cs" />
+    <Compile Include="JSON\Serialization\JSONAttributeOverrides.cs" />
+    <Compile Include="JSON\Serialization\ObjectResolver.cs" />
+    <Compile Include="JSON\Transaction.cs" />
+    <Compile Include="JSON\TransactionConverter.cs" />
+    <Compile Include="Messaging\cmisACLType.Designer.cs">
+      <DependentUpon>cmisACLType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\cmisACLType.cs" />
+    <Compile Include="Messaging\cmisContentStreamType.Designer.cs">
+      <DependentUpon>cmisContentStreamType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\cmisContentStreamType.cs" />
+    <Compile Include="Messaging\cmisExtensionType.Designer.cs">
+      <DependentUpon>cmisExtensionType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\cmisExtensionType.cs" />
+    <Compile Include="Messaging\cmisFaultType.Designer.cs">
+      <DependentUpon>cmisFaultType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\cmisFaultType.cs" />
+    <Compile Include="Messaging\cmisObjectInFolderContainerType.Designer.cs">
+      <DependentUpon>cmisObjectInFolderContainerType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\cmisObjectInFolderContainerType.cs" />
+    <Compile Include="Messaging\cmisObjectInFolderListType.Designer.cs">
+      <DependentUpon>cmisObjectInFolderListType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\cmisObjectInFolderListType.cs" />
+    <Compile Include="Messaging\cmisObjectInFolderType.Designer.cs">
+      <DependentUpon>cmisObjectInFolderType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\cmisObjectInFolderType.cs" />
+    <Compile Include="Messaging\cmisObjectListType.Designer.cs">
+      <DependentUpon>cmisObjectListType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\cmisObjectListType.cs" />
+    <Compile Include="Messaging\cmisObjectParentsType.Designer.cs">
+      <DependentUpon>cmisObjectParentsType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\cmisObjectParentsType.cs" />
+    <Compile Include="Messaging\cmisRepositoryEntryType.Designer.cs">
+      <DependentUpon>cmisRepositoryEntryType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\cmisRepositoryEntryType.cs" />
+    <Compile Include="Messaging\cmisTypeContainer.Designer.cs">
+      <DependentUpon>cmisTypeContainer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\cmisTypeContainer.cs" />
+    <Compile Include="Messaging\cmisTypeDefinitionListType.Designer.cs">
+      <DependentUpon>cmisTypeDefinitionListType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\cmisTypeDefinitionListType.cs" />
+    <Compile Include="Messaging\Enums.Designer.cs">
+      <DependentUpon>Enums.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Enums.cs" />
+    <Compile Include="Messaging\failedToDelete.Designer.cs">
+      <DependentUpon>failedToDelete.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\failedToDelete.cs" />
+    <Compile Include="Messaging\Requests\addObjectToFolder.Designer.cs">
+      <DependentUpon>addObjectToFolder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\addObjectToFolder.cs" />
+    <Compile Include="Messaging\Requests\appendContentStream.Designer.cs">
+      <DependentUpon>appendContentStream.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\appendContentStream.cs" />
+    <Compile Include="Messaging\Requests\applyACL.Designer.cs">
+      <DependentUpon>applyACL.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\applyACL.cs" />
+    <Compile Include="Messaging\Requests\applyPolicy.Designer.cs">
+      <DependentUpon>applyPolicy.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\applyPolicy.cs" />
+    <Compile Include="Messaging\Requests\bulkUpdateProperties.Designer.cs">
+      <DependentUpon>bulkUpdateProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\bulkUpdateProperties.cs" />
+    <Compile Include="Messaging\Requests\cancelCheckOut.Designer.cs">
+      <DependentUpon>cancelCheckOut.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\cancelCheckOut.cs" />
+    <Compile Include="Messaging\Requests\checkIn.Designer.cs">
+      <DependentUpon>checkIn.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\checkIn.cs" />
+    <Compile Include="Messaging\Requests\checkOut.Designer.cs">
+      <DependentUpon>checkOut.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\checkOut.cs" />
+    <Compile Include="Messaging\Requests\createDocument.Designer.cs">
+      <DependentUpon>createDocument.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\createDocument.cs" />
+    <Compile Include="Messaging\Requests\createDocumentFromSource.Designer.cs">
+      <DependentUpon>createDocumentFromSource.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\createDocumentFromSource.cs" />
+    <Compile Include="Messaging\Requests\createFolder.Designer.cs">
+      <DependentUpon>createFolder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\createFolder.cs" />
+    <Compile Include="Messaging\Requests\createItem.Designer.cs">
+      <DependentUpon>createItem.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\createItem.cs" />
+    <Compile Include="Messaging\Requests\createPolicy.Designer.cs">
+      <DependentUpon>createPolicy.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\createPolicy.cs" />
+    <Compile Include="Messaging\Requests\createRelationship.Designer.cs">
+      <DependentUpon>createRelationship.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\createRelationship.cs" />
+    <Compile Include="Messaging\Requests\createType.Designer.cs">
+      <DependentUpon>createType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\createType.cs" />
+    <Compile Include="Messaging\Requests\deleteContentStream.Designer.cs">
+      <DependentUpon>deleteContentStream.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\deleteContentStream.cs" />
+    <Compile Include="Messaging\Requests\deleteObject.Designer.cs">
+      <DependentUpon>deleteObject.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\deleteObject.cs" />
+    <Compile Include="Messaging\Requests\deleteTree.Designer.cs">
+      <DependentUpon>deleteTree.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\deleteTree.cs" />
+    <Compile Include="Messaging\Requests\deleteType.Designer.cs">
+      <DependentUpon>deleteType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\deleteType.cs" />
+    <Compile Include="Messaging\Requests\getACL.Designer.cs">
+      <DependentUpon>getACL.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\getACL.cs" />
+    <Compile Include="Messaging\Requests\getAllowableActions.Designer.cs">
+      <DependentUpon>getAllowableActions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\getAllowableActions.cs" />
+    <Compile Include="Messaging\Requests\getAllVersions.Designer.cs">
+      <DependentUpon>getAllVersions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\getAllVersions.cs" />
+    <Compile Include="Messaging\Requests\getAppliedPolicies.Designer.cs">
+      <DependentUpon>getAppliedPolicies.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\getAppliedPolicies.cs" />
+    <Compile Include="Messaging\Requests\getCheckedOutDocs.Designer.cs">
+      <DependentUpon>getCheckedOutDocs.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\getCheckedOutDocs.cs" />
+    <Compile Include="Messaging\Requests\getChildren.Designer.cs">
+      <DependentUpon>getChildren.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\getChildren.cs" />
+    <Compile Include="Messaging\Requests\getContentChanges.Designer.cs">
+      <DependentUpon>getContentChanges.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\getContentChanges.cs" />
+    <Compile Include="Messaging\Requests\getContentStream.Designer.cs">
+      <DependentUpon>getContentStream.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\getContentStream.cs" />
+    <Compile Include="Messaging\Requests\getDescendants.Designer.cs">
+      <DependentUpon>getDescendants.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\getDescendants.cs" />
+    <Compile Include="Messaging\Requests\getFolderParent.Designer.cs">
+      <DependentUpon>getFolderParent.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\getFolderParent.cs" />
+    <Compile Include="Messaging\Requests\getFolderTree.Designer.cs">
+      <DependentUpon>getFolderTree.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\getFolderTree.cs" />
+    <Compile Include="Messaging\Requests\getObject.Designer.cs">
+      <DependentUpon>getObject.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\getObject.cs" />
+    <Compile Include="Messaging\Requests\getObjectByPath.Designer.cs">
+      <DependentUpon>getObjectByPath.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\getObjectByPath.cs" />
+    <Compile Include="Messaging\Requests\getObjectOfLatestVersion.Designer.cs">
+      <DependentUpon>getObjectOfLatestVersion.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\getObjectOfLatestVersion.cs" />
+    <Compile Include="Messaging\Requests\getObjectParents.Designer.cs">
+      <DependentUpon>getObjectParents.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\getObjectParents.cs" />
+    <Compile Include="Messaging\Requests\getObjectRelationships.Designer.cs">
+      <DependentUpon>getObjectRelationships.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\getObjectRelationships.cs" />
+    <Compile Include="Messaging\Requests\getProperties.Designer.cs">
+      <DependentUpon>getProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\getProperties.cs" />
+    <Compile Include="Messaging\Requests\getPropertiesOfLatestVersion.Designer.cs">
+      <DependentUpon>getPropertiesOfLatestVersion.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\getPropertiesOfLatestVersion.cs" />
+    <Compile Include="Messaging\Requests\getRenditions.Designer.cs">
+      <DependentUpon>getRenditions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\getRenditions.cs" />
+    <Compile Include="Messaging\Requests\getRepositories.Designer.cs">
+      <DependentUpon>getRepositories.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\getRepositories.cs" />
+    <Compile Include="Messaging\Requests\getRepositoryInfo.Designer.cs">
+      <DependentUpon>getRepositoryInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\getRepositoryInfo.cs" />
+    <Compile Include="Messaging\Requests\getTypeChildren.Designer.cs">
+      <DependentUpon>getTypeChildren.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\getTypeChildren.cs" />
+    <Compile Include="Messaging\Requests\getTypeDefinition.Designer.cs">
+      <DependentUpon>getTypeDefinition.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\getTypeDefinition.cs" />
+    <Compile Include="Messaging\Requests\getTypeDescendants.Designer.cs">
+      <DependentUpon>getTypeDescendants.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\getTypeDescendants.cs" />
+    <Compile Include="Messaging\Requests\moveObject.Designer.cs">
+      <DependentUpon>moveObject.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\moveObject.cs" />
+    <Compile Include="Messaging\Requests\query.Designer.cs">
+      <DependentUpon>query.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\query.cs" />
+    <Compile Include="Messaging\Requests\removeObjectFromFolder.Designer.cs">
+      <DependentUpon>removeObjectFromFolder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\removeObjectFromFolder.cs" />
+    <Compile Include="Messaging\Requests\removePolicy.Designer.cs">
+      <DependentUpon>removePolicy.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\removePolicy.cs" />
+    <Compile Include="Messaging\Requests\RequestBase.cs" />
+    <Compile Include="Messaging\Requests\setContentStream.Designer.cs">
+      <DependentUpon>setContentStream.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\setContentStream.cs" />
+    <Compile Include="Messaging\Requests\updateProperties.Designer.cs">
+      <DependentUpon>updateProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\updateProperties.cs" />
+    <Compile Include="Messaging\Requests\updateType.Designer.cs">
+      <DependentUpon>updateType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Requests\updateType.cs" />
+    <Compile Include="Messaging\Responses\addObjectToFolderResponse.Designer.cs">
+      <DependentUpon>addObjectToFolderResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\addObjectToFolderResponse.cs" />
+    <Compile Include="Messaging\Responses\appendContentStreamResponse.Designer.cs">
+      <DependentUpon>appendContentStreamResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\appendContentStreamResponse.cs" />
+    <Compile Include="Messaging\Responses\applyACLResponse.Designer.cs">
+      <DependentUpon>applyACLResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\applyACLResponse.cs" />
+    <Compile Include="Messaging\Responses\applyPolicyResponse.Designer.cs">
+      <DependentUpon>applyPolicyResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\applyPolicyResponse.cs" />
+    <Compile Include="Messaging\Responses\bulkUpdatePropertiesResponse.Designer.cs">
+      <DependentUpon>bulkUpdatePropertiesResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\bulkUpdatePropertiesResponse.cs" />
+    <Compile Include="Messaging\Responses\cancelCheckOutResponse.Designer.cs">
+      <DependentUpon>cancelCheckOutResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\cancelCheckOutResponse.cs" />
+    <Compile Include="Messaging\Responses\checkInResponse.Designer.cs">
+      <DependentUpon>checkInResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\checkInResponse.cs" />
+    <Compile Include="Messaging\Responses\checkOutResponse.Designer.cs">
+      <DependentUpon>checkOutResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\checkOutResponse.cs" />
+    <Compile Include="Messaging\Responses\createDocumentFromSourceResponse.Designer.cs">
+      <DependentUpon>createDocumentFromSourceResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\createDocumentFromSourceResponse.cs" />
+    <Compile Include="Messaging\Responses\createDocumentResponse.Designer.cs">
+      <DependentUpon>createDocumentResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\createDocumentResponse.cs" />
+    <Compile Include="Messaging\Responses\createFolderResponse.Designer.cs">
+      <DependentUpon>createFolderResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\createFolderResponse.cs" />
+    <Compile Include="Messaging\Responses\createItemResponse.Designer.cs">
+      <DependentUpon>createItemResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\createItemResponse.cs" />
+    <Compile Include="Messaging\Responses\createPolicyResponse.Designer.cs">
+      <DependentUpon>createPolicyResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\createPolicyResponse.cs" />
+    <Compile Include="Messaging\Responses\createRelationshipResponse.Designer.cs">
+      <DependentUpon>createRelationshipResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\createRelationshipResponse.cs" />
+    <Compile Include="Messaging\Responses\createTypeResponse.Designer.cs">
+      <DependentUpon>createTypeResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\createTypeResponse.cs" />
+    <Compile Include="Messaging\Responses\deleteContentStreamResponse.Designer.cs">
+      <DependentUpon>deleteContentStreamResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\deleteContentStreamResponse.cs" />
+    <Compile Include="Messaging\Responses\deleteObjectResponse.Designer.cs">
+      <DependentUpon>deleteObjectResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\deleteObjectResponse.cs" />
+    <Compile Include="Messaging\Responses\deleteTreeResponse.Designer.cs">
+      <DependentUpon>deleteTreeResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\deleteTreeResponse.cs" />
+    <Compile Include="Messaging\Responses\deleteTypeResponse.Designer.cs">
+      <DependentUpon>deleteTypeResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\deleteTypeResponse.cs" />
+    <Compile Include="Messaging\Responses\getACLResponse.Designer.cs">
+      <DependentUpon>getACLResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\getACLResponse.cs" />
+    <Compile Include="Messaging\Responses\getAllowableActionsResponse.Designer.cs">
+      <DependentUpon>getAllowableActionsResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\getAllowableActionsResponse.cs" />
+    <Compile Include="Messaging\Responses\getAllVersionsResponse.Designer.cs">
+      <DependentUpon>getAllVersionsResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\getAllVersionsResponse.cs" />
+    <Compile Include="Messaging\Responses\getAppliedPoliciesResponse.Designer.cs">
+      <DependentUpon>getAppliedPoliciesResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\getAppliedPoliciesResponse.cs" />
+    <Compile Include="Messaging\Responses\getCheckedOutDocsResponse.Designer.cs">
+      <DependentUpon>getCheckedOutDocsResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\getCheckedOutDocsResponse.cs" />
+    <Compile Include="Messaging\Responses\getChildrenResponse.Designer.cs">
+      <DependentUpon>getChildrenResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\getChildrenResponse.cs" />
+    <Compile Include="Messaging\Responses\getContentChangesResponse.Designer.cs">
+      <DependentUpon>getContentChangesResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\getContentChangesResponse.cs" />
+    <Compile Include="Messaging\Responses\getContentStreamResponse.Designer.cs">
+      <DependentUpon>getContentStreamResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\getContentStreamResponse.cs" />
+    <Compile Include="Messaging\Responses\getDescendantsResponse.Designer.cs">
+      <DependentUpon>getDescendantsResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\getDescendantsResponse.cs" />
+    <Compile Include="Messaging\Responses\getFolderParentResponse.Designer.cs">
+      <DependentUpon>getFolderParentResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\getFolderParentResponse.cs" />
+    <Compile Include="Messaging\Responses\getFolderTreeResponse.Designer.cs">
+      <DependentUpon>getFolderTreeResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\getFolderTreeResponse.cs" />
+    <Compile Include="Messaging\Responses\getObjectByPathResponse.Designer.cs">
+      <DependentUpon>getObjectByPathResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\getObjectByPathResponse.cs" />
+    <Compile Include="Messaging\Responses\getObjectOfLatestVersionResponse.Designer.cs">
+      <DependentUpon>getObjectOfLatestVersionResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\getObjectOfLatestVersionResponse.cs" />
+    <Compile Include="Messaging\Responses\getObjectParentsResponse.Designer.cs">
+      <DependentUpon>getObjectParentsResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\getObjectParentsResponse.cs" />
+    <Compile Include="Messaging\Responses\getObjectRelationshipsResponse.Designer.cs">
+      <DependentUpon>getObjectRelationshipsResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\getObjectRelationshipsResponse.cs" />
+    <Compile Include="Messaging\Responses\getObjectResponse.Designer.cs">
+      <DependentUpon>getObjectResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\getObjectResponse.cs" />
+    <Compile Include="Messaging\Responses\getPropertiesOfLatestVersionResponse.Designer.cs">
+      <DependentUpon>getPropertiesOfLatestVersionResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\getPropertiesOfLatestVersionResponse.cs" />
+    <Compile Include="Messaging\Responses\getPropertiesResponse.Designer.cs">
+      <DependentUpon>getPropertiesResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\getPropertiesResponse.cs" />
+    <Compile Include="Messaging\Responses\getRenditionsResponse.Designer.cs">
+      <DependentUpon>getRenditionsResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\getRenditionsResponse.cs" />
+    <Compile Include="Messaging\Responses\getRepositoriesResponse.Designer.cs">
+      <DependentUpon>getRepositoriesResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\getRepositoriesResponse.cs" />
+    <Compile Include="Messaging\Responses\getRepositoryInfoResponse.Designer.cs">
+      <DependentUpon>getRepositoryInfoResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\getRepositoryInfoResponse.cs" />
+    <Compile Include="Messaging\Responses\getTypeChildrenResponse.Designer.cs">
+      <DependentUpon>getTypeChildrenResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\getTypeChildrenResponse.cs" />
+    <Compile Include="Messaging\Responses\getTypeDefinitionResponse.Designer.cs">
+      <DependentUpon>getTypeDefinitionResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\getTypeDefinitionResponse.cs" />
+    <Compile Include="Messaging\Responses\getTypeDescendantsResponse.Designer.cs">
+      <DependentUpon>getTypeDescendantsResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\getTypeDescendantsResponse.cs" />
+    <Compile Include="Messaging\Responses\moveObjectResponse.Designer.cs">
+      <DependentUpon>moveObjectResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\moveObjectResponse.cs" />
+    <Compile Include="Messaging\Responses\MultiFilingResponse.cs" />
+    <Compile Include="Messaging\Responses\ObjectManipulationServiceResponse.cs" />
+    <Compile Include="Messaging\Responses\PolicyManipulationServiceResponse.cs" />
+    <Compile Include="Messaging\Responses\queryResponse.Designer.cs">
+      <DependentUpon>queryResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\queryResponse.cs" />
+    <Compile Include="Messaging\Responses\removeObjectFromFolderResponse.Designer.cs">
+      <DependentUpon>removeObjectFromFolderResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\removeObjectFromFolderResponse.cs" />
+    <Compile Include="Messaging\Responses\removePolicyResponse.Designer.cs">
+      <DependentUpon>removePolicyResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\removePolicyResponse.cs" />
+    <Compile Include="Messaging\Responses\setContentStreamResponse.Designer.cs">
+      <DependentUpon>setContentStreamResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\setContentStreamResponse.cs" />
+    <Compile Include="Messaging\Responses\updatePropertiesResponse.Designer.cs">
+      <DependentUpon>updatePropertiesResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\updatePropertiesResponse.cs" />
+    <Compile Include="Messaging\Responses\updateTypeResponse.Designer.cs">
+      <DependentUpon>updateTypeResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\Responses\updateTypeResponse.cs" />
+    <Compile Include="My Project\AssemblyInfo.cs" />
+    <Compile Include="My Project\Application.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Application.myapp</DependentUpon>
+    </Compile>
+    <Compile Include="Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="My Project\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="RestAtom\cmisChildrenType.Designer.cs">
+      <DependentUpon>cmisChildrenType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="RestAtom\cmisChildrenType.cs" />
+    <Compile Include="RestAtom\cmisContentType.Designer.cs">
+      <DependentUpon>cmisContentType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="RestAtom\cmisContentType.cs" />
+    <Compile Include="RestAtom\cmisUriTemplateType.Designer.cs">
+      <DependentUpon>cmisUriTemplateType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="RestAtom\cmisUriTemplateType.cs" />
+    <Compile Include="RestAtom\Enums.Designer.cs">
+      <DependentUpon>Enums.cs</DependentUpon>
+    </Compile>
+    <Compile Include="RestAtom\Enums.cs" />
+    <Compile Include="Serialization\EmptyXmlSerializable.cs" />
+    <Compile Include="Serialization\SerializationHelper.cs" />
+    <Compile Include="Serialization\XmlAttributeOverrides.cs" />
+    <Compile Include="Serialization\XmlSerializable.cs" />
+    <Compile Include="ServiceModel\AtomPub\CmisService.cs" />
+    <Compile Include="ServiceModel\AtomPub\ServiceManager.cs" />
+    <Compile Include="ServiceModel\Base\CmisService.cs" />
+    <Compile Include="ServiceModel\Base\ServiceManager.cs" />
+    <Compile Include="ServiceModel\Base\UserNamePasswordValidator.cs" />
+    <Compile Include="ServiceModel\Browser\CmisService.cs" />
+    <Compile Include="ServiceModel\Browser\ServiceManager.cs" />
+    <Compile Include="ServiceModel\cmisObjectInFolderContainerType.cs" />
+    <Compile Include="ServiceModel\cmisObjectInFolderListType.cs" />
+    <Compile Include="ServiceModel\cmisObjectInFolderType.cs" />
+    <Compile Include="ServiceModel\cmisObjectListType.cs" />
+    <Compile Include="ServiceModel\cmisObjectParentsType.cs" />
+    <Compile Include="ServiceModel\cmisObjectType.cs" />
+    <Compile Include="ServiceModel\CmisServiceImplBase.cs" />
+    <Compile Include="ServiceModel\Generic\ServiceImplFactory.cs" />
+    <Compile Include="ServiceModel\getContentChanges.cs" />
+    <Compile Include="ServiceModel\Query\AliasExpression.cs" />
+    <Compile Include="ServiceModel\Query\BetweenExpression.cs" />
+    <Compile Include="ServiceModel\Query\CompositeExpression.cs" />
+    <Compile Include="ServiceModel\Query\ConstantExpression.cs" />
+    <Compile Include="ServiceModel\Query\DatabaseObjectExpression.cs" />
+    <Compile Include="ServiceModel\Query\Expression.cs" />
+    <Compile Include="ServiceModel\Query\FieldContainerExpression.cs" />
+    <Compile Include="ServiceModel\Query\FieldExpression.cs" />
+    <Compile Include="ServiceModel\Query\FromExpression.cs" />
+    <Compile Include="ServiceModel\Query\IdentifierExpression.cs" />
+    <Compile Include="ServiceModel\Query\JoinExpression.cs" />
+    <Compile Include="ServiceModel\Query\MethodExpression.cs" />
+    <Compile Include="ServiceModel\Query\OperatorExpression.cs" />
+    <Compile Include="ServiceModel\Query\OrderByExpression.cs" />
+    <Compile Include="ServiceModel\Query\OrderDirectionExpression.cs" />
+    <Compile Include="ServiceModel\Query\ParenthesisExpression.cs" />
+    <Compile Include="ServiceModel\Query\QueryParser.cs" />
+    <Compile Include="ServiceModel\Query\SelectExpression.cs" />
+    <Compile Include="ServiceModel\Query\SignExpression.cs" />
+    <Compile Include="ServiceModel\Query\SqlPartExpression.cs" />
+    <Compile Include="ServiceModel\Query\TableExpression.cs" />
+    <Compile Include="ServiceModel\Query\WhereExpression.cs" />
+    <Compile Include="ServiceModel\WebService\CmisWebService.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ServiceModel\WebService\CmisWebServiceImplBase.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <CustomToolNamespace>My.Resources</CustomToolNamespace>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="Core\CMIS-Core.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Messaging\CMIS-Messaging.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="My Project\Application.myapp">
+      <Generator>MyApplicationCodeGenerator</Generator>
+      <LastGenOutput>Application.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="My Project\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <CustomToolNamespace>My</CustomToolNamespace>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="packages.config" />
+    <None Include="RestAtom\CMIS-RestAtom.xsd">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="CmisTypeDefinitions.xml" />
+    <Content Include="Content Management Interoperability Services %28CMIS%29 Version 1_1-Dateien\clientmgtretention.png" />
+    <Content Include="Content Management Interoperability Services %28CMIS%29 Version 1_1-Dateien\CMIS-v1.1-cs01-html.css" />
+    <Content Include="Content Management Interoperability Services %28CMIS%29 Version 1_1-Dateien\cmis.png" />
+    <Content Include="Content Management Interoperability Services %28CMIS%29 Version 1_1-Dateien\cmis11-highlevel-uml.png" />
+    <Content Include="Content Management Interoperability Services %28CMIS%29 Version 1_1-Dateien\cmis11-types-uml.png" />
+    <Content Include="Content Management Interoperability Services %28CMIS%29 Version 1_1-Dateien\cmisquery.png" />
+    <Content Include="Content Management Interoperability Services %28CMIS%29 Version 1_1-Dateien\fileplan.png" />
+    <Content Include="Content Management Interoperability Services %28CMIS%29 Version 1_1-Dateien\folders.png" />
+    <Content Include="Content Management Interoperability Services %28CMIS%29 Version 1_1-Dateien\hold.png" />
+    <Content Include="Content Management Interoperability Services %28CMIS%29 Version 1_1-Dateien\oasis.png" />
+    <Content Include="Content Management Interoperability Services %28CMIS%29 Version 1_1-Dateien\repmgtretention.png" />
+    <Content Include="Content Management Interoperability Services %28CMIS%29 Version 1_1-Dateien\searchscope.png" />
+    <Content Include="Content Management Interoperability Services %28CMIS%29 Version 1_1-Dateien\transaction1.png" />
+    <Content Include="Content Management Interoperability Services %28CMIS%29 Version 1_1-Dateien\transaction2.png" />
+    <Content Include="Content Management Interoperability Services %28CMIS%29 Version 1_1-Dateien\virtualtable.png" />
+    <Content Include="Content Management Interoperability Services %28CMIS%29 Version 1_1.htm" />
+    <Content Include="JSON\Cmis-Browserbinding.txt" />
+    <Content Include="JSON\FormRequests\cmis.js" />
+    <Content Include="JSON\FormRequests\EmbeddedFrame.htm" />
+    <Content Include="JSON\FormRequests\EmptyPage.htm" />
+    <Content Include="JSON\FormRequests\LoginPage.htm" />
+    <Content Include="JSON\FormRequests\LoginRefPage.htm" />
+    <Content Include="JSON\FormRequests\RedirectPreviousPage.htm" />
+    <Content Include="lgpl.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Client\WebService\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

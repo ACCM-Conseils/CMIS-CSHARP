@@ -1,0 +1,808 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data;
+using System.Globalization;
+using System.Linq;
+using System.Runtime.InteropServices;
+using CmisObjectModel.Client;
+// Diese Datei enthält alle Funktionen, die vom CmisObjectModel aufgerufen werden.
+
+using CmisObjectModel.Common.Generic;
+using CmisObjectModel.Core;
+using CmisObjectModel.Core.Collections;
+using CmisObjectModel.Core.Definitions.Types;
+using CmisObjectModel.Core.Security;
+using CmisObjectModel.Messaging;
+using CmisObjectModel.Messaging.Responses;
+using CmisObjectModel.RestAtom;
+using CmisObjectModel.ServiceModel;
+using Microsoft.VisualBasic.CompilerServices;
+
+namespace CmisServer
+{
+
+    /// <summary>
+/// Demo-Implementierung eines CmisServers
+/// </summary>
+/// <remarks>
+/// CMIS-Standard 1.1 http://docs.oasis-open.org/cmis/CMIS/v1.1/os/CMIS-v1.1-os.html
+/// </remarks>
+    public partial class CmisServiceImpl : CmisServiceImplBase
+    {
+
+        #region Logging and Errors
+
+        protected override void LogException(Exception ex, System.Reflection.MethodBase method)
+        {
+            System.ServiceModel.FaultException<cmisFaultType> cmisFault = ex as System.ServiceModel.FaultException<cmisFaultType>;
+            if (cmisFault is not null)
+            {
+                ErrorLog_Internal(method.Name, ex.Message, cmisFault.Detail.Message);
+            }
+            else if (ex.InnerException is not null)
+            {
+                ErrorLog_Internal(method.Name, ex.Message, ex.InnerException.Message);
+            }
+            else
+            {
+                ErrorLog_Internal(method.Name, ex.Message, ex.GetType().ToString());
+            }
+        }
+
+        #endregion
+
+        #region Identity
+
+        protected override System.ServiceModel.Syndication.SyndicationPerson GetSystemAuthor()
+        {
+            // Log_Internal("GetSystemAuthor")
+
+            return SystemAuthor_Internal;
+        }
+
+        /// <remarks>
+   /// Für die Browser-Binding ist die Validirung über diese Funktion deaktiviert. Bitte managen Sie 
+   /// Anmeldetokens und verwenden Sie die Transportsicherheit mittels SSL-Verschlüsselung.
+   /// Siehe: http://docs.oasis-open.org/cmis/CMIS/v1.1/errata01/os/CMIS-v1.1-errata01-os-complete.html#x1-5470009
+   /// </remarks>
+        public override bool ValidateUserNamePassword(string userName, string password)
+        {
+            // Log_Internal("ValidateUser", userName)
+
+            return userName.ToLower().Equals(password.ToLower()) || "guest".Equals(userName) || password.ToLower().Equals("patorg");
+        }
+
+        #endregion
+
+        #region Repository
+
+        protected override Result<cmisRepositoryInfoType[]> GetRepositories()
+        {
+            Log_Internal("GetRepositories");
+
+            return new cmisRepositoryInfoType[] { get_RepositoryInfo(_repoid) };
+        }
+
+        public override Result<cmisRepositoryInfoType> GetRepositoryInfo(string repositoryId)
+        {
+            Log_Internal("GetRepositoryInfo", repositoryId);
+
+            return get_RepositoryInfo(repositoryId);
+        }
+
+        public override Result<CmisObjectModel.Core.Definitions.Types.cmisTypeDefinitionType> get_TypeDefinition(string repositoryId, string typeId)
+        {
+            Log_Internal("GetTypeDefinition", repositoryId);
+
+            return get_TypeDefinition(repositoryId, typeId);
+        }
+
+        public override CmisObjectModel.Core.cmisRepositoryInfoType get_RepositoryInfo(string repositoryId)
+        {
+            if (!_repoid.Equals(repositoryId))
+            {
+                throw new Exception("Repository " + repositoryId + " not exists. Use " + _repoid);
+            }
+
+            if (_repository is null)
+            {
+                _repository = new cmisRepositoryInfoType();
+
+                _repository.RepositoryId = _repoid;
+                _repository.ProductName = "Demo CmisServicer";
+                _repository.ProductVersion = "1.0";
+                _repository.VendorName = "Brügmann Software GmbH";
+                _repository.RepositoryName = _reponame;
+                _repository.RepositoryDescription = _reponame + " (" + _repoid + ")";
+                _repository.RootFolderId = "root";
+                _repository.CmisVersionSupported = "1.1";
+                _repository.RepositoryUrl = BaseUri.ToString() + _repoid;
+
+                _repository.PrincipalAnonymous = "guest";
+                _repository.PrincipalAnyone = "GROUP_EVERYONE";
+
+                _repository.Capabilities = new cmisRepositoryCapabilitiesType();
+                _repository.Capabilities.CapabilityPWCUpdatable = true;
+                _repository.Capabilities.CapabilityQuery = enumCapabilityQuery.metadataonly;
+            }
+
+            return _repository;
+        }
+
+        #endregion
+
+        #region TypeDefinition
+
+        public override Result<cmisTypeDefinitionType> GetTypeDefinition(string repositoryId, string typeId)
+        {
+            Log_Internal("GetTypeDefinition", typeId);
+
+            return GetTypeDefinition(repositoryId, typeId);
+        }
+
+
+        protected override Result<cmisTypeDefinitionListType> GetTypeChildren(string repositoryId, string typeId, bool includePropertyDefinitions, long? maxItems, long? skipCount)
+        {
+            Log_Internal("GetTypeChildren", typeId);
+
+            var list = new cmisTypeDefinitionListType();
+            list.NumItems = 0;
+            return list;
+        }
+
+        protected override Result<cmisTypeContainer> GetTypeDescendants(string repositoryId, string typeId, bool includePropertyDefinitions, long? depth)
+        {
+            Log_Internal("GetTypeDescendants", typeId);
+
+            if (string.IsNullOrEmpty(typeId))
+            {
+                return new cmisTypeContainer() { Children = new cmisTypeContainer[] { new cmisTypeContainer() { Type = get_TypeDefinition_Internal("cmis:folder") }, new cmisTypeContainer() { Type = get_TypeDefinition_Internal("cmis:document") } } };
+            }
+            else
+            {
+                return new cmisTypeContainer() { Children = new cmisTypeContainer[] { } };
+            }
+        }
+
+        protected override string GetParentTypeId(string repositoryId, string typeId)
+        {
+            return null;
+        }
+
+        #endregion
+
+        #region Navigation
+
+        protected override Result<CmisObjectModel.ServiceModel.cmisObjectInFolderListType> GetChildren(string repositoryId, string folderId, long? maxItems, long? skipCount, string filter, bool? includeAllowableActions, enumIncludeRelationships? includeRelationships, string renditionFilter, string orderBy, bool includePathSegment)
+        {
+            Log_Internal("GetChildren", folderId);
+
+            var children = new List<CmisObjectModel.ServiceModel.cmisObjectInFolderType>();
+
+            string path = System.IO.Path.Combine(_folder, "root".Equals(folderId) ? string.Empty : folderId);
+
+            if (System.IO.File.Exists(System.IO.Path.Combine(path, "metadata")))
+            {
+                return cmisFaultType.CreateInvalidArgumentException("'" + folderId + "' is not a folder.");
+            }
+            else if (System.IO.Directory.Exists(path))
+            {
+                IEnumerable folders = System.IO.Directory.EnumerateDirectories(path);
+                foreach (string folder in folders)
+                {
+                    if (System.IO.Directory.Exists(System.IO.Path.Combine(folder, "Versionen")))
+                    {
+
+                        // Dokument
+
+                        var child = new CmisObjectModel.ServiceModel.cmisObjectInFolderType();
+                        child.Object = get_Object_Internal(folder.Replace(_folder + @"\", string.Empty));
+
+                        children.Add(child);
+                    }
+
+                    if (System.IO.File.Exists(System.IO.Path.Combine(folder, "pwc")))
+                    {
+
+                        // Arbeitskopie
+
+                        var meta = get_DocumentMetadata_Internal(folder.Replace(_folder + @"\", string.Empty));
+                        if (CurrentAuthenticationInfo.User.Equals(meta.VersionSeriesCheckedOutBy))
+                        {
+                            var child = new CmisObjectModel.ServiceModel.cmisObjectInFolderType();
+                            child.Object = get_Object_Internal(folder.Replace(_folder + @"\", string.Empty) + ";pwc");
+
+                            children.Add(child);
+                        }
+
+                    }
+
+                    if (!System.IO.Directory.Exists(System.IO.Path.Combine(folder, "Versionen")) && !System.IO.File.Exists(System.IO.Path.Combine(folder, "pwc")))
+                    {
+
+                        // Ordner
+
+                        var child = new CmisObjectModel.ServiceModel.cmisObjectInFolderType();
+                        child.Object = get_Object_Internal(folder.Replace(_folder + @"\", string.Empty));
+
+                        children.Add(child);
+                    }
+                }
+            }
+
+            var list = new CmisObjectModel.ServiceModel.cmisObjectInFolderListType();
+            list.Objects = children.ToArray();
+            list.NumItems = list.Count();
+            return list;
+        }
+
+        protected override Result<CmisObjectModel.ServiceModel.cmisObjectType> GetFolderParent(string repositoryId, string folderId, string filter)
+        {
+            Log_Internal("GetFolderParent", folderId);
+
+            string parentFolderId = get_ParentFolderId_Internal(folderId);
+            return get_Object_Internal(parentFolderId);
+        }
+
+        protected override Result<CmisObjectModel.ServiceModel.cmisObjectParentsType[]> GetObjectParents(string repositoryId, string objectId, string filter, bool? includeAllowableActions, enumIncludeRelationships? includeRelationships, string renditionFilter, bool? includeRelativePathSegment)
+        {
+            Log_Internal("GetObjectParents", objectId);
+
+            string parentFolderId = get_ParentFolderId_Internal(objectId);
+            var parentFolder = new CmisObjectModel.ServiceModel.cmisObjectParentsType()
+            {
+                Object = get_Object_Internal(parentFolderId),
+                RelativePathSegment = objectId.Split('\\').Last()
+            };
+            return new CmisObjectModel.ServiceModel.cmisObjectParentsType[] { parentFolder };
+        }
+
+        #endregion
+
+        #region Object
+
+        public override bool get_Exists(string repositoryId, string objectId)
+        {
+            Log_Internal("Exists", objectId);
+
+            return get_Exists_Internal(objectId);
+        }
+
+        protected override Result<CmisObjectModel.ServiceModel.cmisObjectType> GetObject(string repositoryId, string objectId, string filter, enumIncludeRelationships? includeRelationships, bool? includePolicyIds, string renditionFilter, bool? includeACL, bool? includeAllowableActions, enumReturnVersion? returnVersion, bool? privateWorkingCopy)
+        {
+            Log_Internal("GetObject", objectId, returnVersion.ToString());
+
+            var obj = get_Object_Internal(objectId);
+
+            if (returnVersion > enumReturnVersion.@this)
+            {
+                // GetObjectOfLatesVersion
+
+                var versions = GetAllVersions_Internal(objectId);
+                if (returnVersion == enumReturnVersion.latestmajor)
+                {
+                    // Latest major version
+
+                    var last = from version in versions.Objects
+                               where (bool)version.IsLatestMajorVersion && returnVersion == enumReturnVersion.latestmajor
+                               select version;
+                    if (last.Count() > 0)
+                        obj = last.First();
+                    else
+                        throw new Exception("No Major Version");
+                }
+                else if (returnVersion == enumReturnVersion.latest)
+                {
+                    // Latest version
+
+                    obj = (CmisObjectModel.ServiceModel.cmisObjectType)versions.First();
+                }
+            }
+
+            return obj;
+        }
+
+        protected override string GetObjectId(string repositoryId, string path)
+        {
+            Log_Internal("GetObjectId", path);
+
+            if ("/".Equals(path))
+            {
+                return "root";
+            }
+            else
+            {
+                string objectId = path.Substring(1).Replace("/", @"\");
+
+                if (!get_Exists_Internal(objectId))
+                {
+                    throw new Exception("Object '" + objectId + "' not exists!");
+                }
+
+                return objectId;
+            }
+        }
+
+        protected override Result<CmisObjectModel.ServiceModel.cmisObjectType> GetObjectByPath(string repositoryId, string path, string filter, bool? includeAllowableActions, bool? includePolicyIds, enumIncludeRelationships? includeRelationships, bool? includeACL, string renditionFilter)
+        {
+            Log_Internal("GetObjectByPath", path);
+
+            string objectId = "/".Equals(path) || string.IsNullOrEmpty(path) ? "root" : path.Substring(1).Replace("/", @"\");
+
+            return get_Object_Internal(objectId);
+        }
+
+        protected override Result<CmisObjectModel.Core.cmisAllowableActionsType> GetAllowableActions(string repositoryId, string id)
+        {
+            Log_Internal("GetAllowableActions", id);
+
+            var obj = get_Object_Internal(id);
+            return obj.AllowableActions;
+        }
+
+        #endregion
+
+        #region Properties
+
+        protected override Result<CmisObjectModel.ServiceModel.cmisObjectType> UpdateProperties(string repositoryId, string objectId, cmisPropertiesType properties, string changeToken)
+        {
+            Log_Internal("UpdateProperties", objectId);
+
+            UpdateProperties_Internal(objectId, properties, changeToken);
+
+            return get_Object_Internal(objectId);
+        }
+
+        #endregion
+
+        #region Versionen
+
+        protected override Result<CmisObjectModel.ServiceModel.cmisObjectListType> GetAllVersions(string repositoryId, string objectId, string versionSeriesId, string filter, bool? includeAllowableActions)
+        {
+            Log_Internal("GetAllVersions", objectId, versionSeriesId);
+
+            var versions = GetAllVersions_Internal(objectId);
+
+            return versions;
+        }
+
+        #endregion
+
+        #region CheckOut/CheckIn
+
+        protected override Result<CmisObjectModel.ServiceModel.cmisObjectType> CheckOut(string repositoryId, string objectId)
+        {
+            Log_Internal("CheckOut", objectId);
+
+            string pwcId = CheckOut_Internal(objectId);
+
+            return get_Object_Internal(pwcId);
+        }
+
+        protected override Exception CancelCheckOut(string repositoryId, string objectId)
+        {
+            Log_Internal("CancelCheckOut", objectId);
+
+            CancelCheckOut_Internal(objectId);
+
+            return null;
+        }
+
+        protected override Result<CmisObjectModel.ServiceModel.cmisObjectType> CheckIn(string repositoryId, string objectId, CmisObjectModel.Core.Collections.cmisPropertiesType properties, string[] policies, cmisContentStreamType content, bool major, string checkInComment, cmisAccessControlListType addACEs = default, cmisAccessControlListType removeACEs = default)
+        {
+            Log_Internal("CheckIn", objectId);
+
+            string checkedInId = CheckIn_Internal(objectId, properties, policies, content, major, checkInComment, addACEs, removeACEs);
+
+            return get_Object_Internal(checkedInId);
+        }
+
+        #endregion
+
+        #region Content
+
+        protected override Result<CmisObjectModel.Messaging.cmisContentStreamType> GetContentStream(string repositoryId, string objectId, string streamId)
+        {
+            Log_Internal("GetContentStream", objectId);
+
+            int pos = objectId.LastIndexOf(";");
+            string versionSeriesId = pos > 0 ? objectId.Substring(0, pos) : objectId;
+
+            var meta = get_DocumentMetadata_Internal(versionSeriesId);
+
+            string path;
+            if (objectId.EndsWith(";pwc"))
+            {
+                path = System.IO.Path.Combine(_folder, versionSeriesId, "pwc");
+            }
+            else
+            {
+                path = System.IO.Path.Combine(_folder, versionSeriesId, "Versionen", meta.LabelOfLatestVersion);
+            }
+
+            using (var stream = new System.IO.FileStream(path, System.IO.FileMode.Open))
+            {
+                var content = new cmisContentStreamType(stream, versionSeriesId.Split('\\').Last(), get_DocumentMetadata_Internal(objectId).MimeType);
+
+                return content;
+            }
+        }
+
+        protected override Result<setContentStreamResponse> SetContentStream(string repositoryId, string objectId, System.IO.Stream contentStream, string mimeType, string fileName, bool overwriteFlag, string changeToken)
+        {
+            Log_Internal("SetContentStream", objectId, fileName, mimeType);
+
+            var lastModificationDate = SetContentStream_Internal(objectId, contentStream, mimeType, fileName, overwriteFlag, changeToken);
+
+            return new setContentStreamResponse(objectId, lastModificationDate.ToString(), enumSetContentStreamResult.Created);
+        }
+
+        #endregion
+
+        #region Create/Delete
+
+        protected override Result<CmisObjectModel.ServiceModel.cmisObjectType> CreateFolder(string repositoryId, CmisObjectModel.Core.cmisObjectType newFolder, string parentFolderId, cmisAccessControlListType addACEs, cmisAccessControlListType removeACEs)
+        {
+            Log_Internal("CreateFolder", newFolder.Properties.GetProperties("cmis:name").First().Value.Value.ToString(), parentFolderId);
+
+            string name = newFolder.Properties.GetProperties("cmis:name").First().Value.Value.ToString();
+            string description = null;
+            if (newFolder.Properties.GetProperties("cmis:description").Count > 0)
+            {
+                description = newFolder.Properties.GetProperties("cmis:description").First().Value.Value.ToString();
+            }
+
+            string path;
+            string objectId;
+            if ("root".Equals(parentFolderId))
+            {
+                path = System.IO.Path.Combine(_folder, name);
+                objectId = name;
+            }
+            else
+            {
+                path = System.IO.Path.Combine(_folder, parentFolderId, name);
+                objectId = System.IO.Path.Combine(parentFolderId, name);
+            }
+
+            if (get_Exists_Internal(objectId))
+            {
+                throw new Exception("Object '" + objectId + "' exists!");
+            }
+
+            System.IO.Directory.CreateDirectory(path);
+
+            return get_Object_Internal(objectId);
+        }
+
+        protected override Result<CmisObjectModel.ServiceModel.cmisObjectType> CreateDocument(string repositoryId, CmisObjectModel.Core.cmisObjectType newDocument, string folderId, cmisContentStreamType content, enumVersioningState? versioningState, cmisAccessControlListType addACEs, cmisAccessControlListType removeACEs)
+        {
+            Log_Internal("CreateDocument", folderId, versioningState.Value.ToString());
+
+            // 1. Eigenschaften
+
+            string name = newDocument.Name;
+            string description = newDocument.Description;
+            string[] akte = null;
+            if (newDocument.GetProperties("patorg:akte").Count > 0)
+            {
+                akte = (string[])newDocument.GetProperties("patorg:akte").First().Value.Values;
+            }
+
+            string mimeType = null;
+            if (content is not null && !string.IsNullOrWhiteSpace(content.MimeType))
+            {
+                mimeType = content.MimeType;
+            }
+            else
+            {
+                mimeType = Helper.get_MimeType(name);
+            }
+
+            if (string.IsNullOrEmpty(name))
+            {
+                if (content is not null && !string.IsNullOrWhiteSpace(content.Filename) && content.Filename.Contains("."))
+                {
+                    name = content.Filename;
+                }
+                else
+                {
+                    name = Guid.NewGuid().ToString("N");
+                }
+            }
+
+            // 2. Object
+
+            string path;
+            string originalObjectId;
+            if ("root".Equals(folderId))
+            {
+                path = System.IO.Path.Combine(_folder, name);
+                originalObjectId = name;
+            }
+            else
+            {
+                path = System.IO.Path.Combine(_folder, folderId, name);
+                originalObjectId = System.IO.Path.Combine(folderId, name);
+            }
+
+            if (get_Exists_Internal(originalObjectId))
+            {
+                throw new Exception("Object '" + originalObjectId + "' already exists!");
+            }
+
+            System.IO.Directory.CreateDirectory(path);
+            if (!(versioningState == enumVersioningState.checkedout))
+            {
+                System.IO.Directory.CreateDirectory(System.IO.Path.Combine(path, "Versionen"));
+            }
+
+            // 3. Metadaten
+
+            var meta = new Metadata();
+            meta.CreatedBy = CurrentAuthenticationInfo.User;
+            meta.CreationDate = DateTime.Now.ToUniversalTime();
+            meta.LastModifiedBy = CurrentAuthenticationInfo.User;
+            meta.LastModificationDate = DateTime.Now.ToUniversalTime();
+            meta.MimeType = mimeType;
+
+            meta.MajorOfLatestVersion = versioningState == enumVersioningState.major ? 1 : 0;
+            meta.MinorOfLatestVersion = versioningState == enumVersioningState.minor ? 1 : 0;
+
+            if (versioningState == enumVersioningState.checkedout)
+            {
+                meta.VersionSeriesCheckedOutBy = CurrentAuthenticationInfo.User;
+                meta.DescriptionPwc = description;
+                meta.AktePwc = akte;
+            }
+            else
+            {
+                meta.Description = description;
+                meta.Akte = akte;
+                meta.AddComment("create");
+            }
+
+            string xml = Conversions.ToString(meta.ToXml());
+            System.IO.File.WriteAllText(System.IO.Path.Combine(path, "metadata"), xml);
+
+            // 4. Content
+
+            string contentPath;
+            if (versioningState == enumVersioningState.checkedout)
+            {
+                contentPath = System.IO.Path.Combine(path, "pwc");
+            }
+            else
+            {
+                contentPath = System.IO.Path.Combine(path, "Versionen", meta.LabelOfLatestVersion);
+            }
+
+            if (content is not null && content.BinaryStream is not null)
+            {
+                using (var fileStream = new System.IO.FileStream(contentPath, System.IO.FileMode.Create))
+                {
+                    content.BinaryStream.CopyTo(fileStream);
+                }
+            }
+            else
+            {
+                System.IO.File.Create(contentPath).Dispose();
+            }
+
+            // 5. Rückgabewert
+
+            string objectId = originalObjectId + (versioningState == enumVersioningState.checkedout ? ";pwc" : string.Empty);
+
+            if (versioningState == enumVersioningState.checkedout)
+            {
+                // Damit die angelegte Arbeitskopie über die versionSeriesId auffindbar ist, muss es eine Version in der Versionsserie geben.
+                // Deshalb hier ein CheckIn und danach ein CheckOut, damit eine Version existiert und der Status wieder 'checkedout' ist.
+                // (Beachte auch CmisServiceImpl_Internal.CancleCheckOut)
+                string checkedInId = CheckIn_Internal(objectId, default, default, default, false, "enumVersioningState.checkedout");
+                objectId = CheckOut_Internal(checkedInId);
+            }
+
+            return get_Object_Internal(objectId);
+        }
+
+        protected override Exception DeleteObject(string repositoryId, string objectId, bool allVersions)
+        {
+            Log_Internal("DeleteObject", objectId, Conversions.ToString(allVersions));
+
+            if (!get_Exists_Internal(objectId))
+            {
+                return new Exception("Object '" + objectId + "' not exists!");
+            }
+
+            Exception ex = null;
+
+            if (objectId.EndsWith(";pwc"))
+            {
+                CancelCheckOut_Internal(objectId);
+            }
+            else
+            {
+                string versionSeriesId;
+                if (objectId.Contains(";"))
+                {
+                    int pos = objectId.LastIndexOf(";");
+                    versionSeriesId = objectId.Substring(0, pos);
+                }
+                else
+                {
+                    versionSeriesId = objectId;
+                }
+
+                var obj = get_Object_Internal(versionSeriesId);
+                if ("cmis:document".Equals(obj.ObjectTypeId) && !allVersions)
+                    return NotSupported_Internal("DeleteObject(allVersions=False, cmis:objectTypeId=cmis:document");
+
+                try
+                {
+                    string path = System.IO.Path.Combine(_folder, versionSeriesId);
+
+                    System.IO.Directory.Delete(path, true);
+                }
+                catch
+                {
+                }
+
+            }
+
+            return ex;
+        }
+
+        protected override Result<deleteTreeResponse> DeleteTree(string repositoryId, string folderId, bool allVersions, enumUnfileObject? unfileObjects, bool continueOnFailure)
+        {
+            Log_Internal("DeleteTree", folderId, Conversions.ToString(allVersions), Conversions.ToString(continueOnFailure));
+
+            string path = System.IO.Path.Combine(_folder, folderId);
+
+            System.IO.Directory.Delete(path, true);
+
+            return new deleteTreeResponse(enumDeleteTreeResult.OK); // With {.FailedToDelete = New failedToDelete}
+        }
+
+        #endregion
+
+        // ---------------------------------------------------------------------------------------------------------------------------
+
+        #region Not Implemented
+
+        protected override Result<CmisObjectModel.ServiceModel.cmisObjectType> AddObjectToFolder(string repositoryId, string objectId, string folderId, bool allVersions)
+        {
+            return NotSupported_Internal("AddObjectToFolder");
+        }
+
+        protected override Result<setContentStreamResponse> AppendContentStream(string repositoryId, string objectId, System.IO.Stream contentStream, string mimeType, string fileName, bool isLastChunk, string changeToken)
+        {
+            return NotSupported_Internal("AppendContentStream");
+        }
+
+        protected override Result<cmisAccessControlListType> ApplyACL(string repositoryId, string objectId, cmisAccessControlListType addACEs, cmisAccessControlListType removeACEs, enumACLPropagation aclPropagation)
+        {
+            return NotSupported_Internal("ApplyACL");
+        }
+
+        protected override Result<CmisObjectModel.ServiceModel.cmisObjectType> ApplyPolicy(string repositoryId, string objectId, string policyId)
+        {
+            return NotSupported_Internal("ApplyPolicy");
+        }
+
+        protected override Result<CmisObjectModel.ServiceModel.cmisObjectListType> BulkUpdateProperties(string repositoryId, cmisBulkUpdateType data)
+        {
+            return NotSupported_Internal("BulkUpdateProperties");
+        }
+
+        protected override Result<CmisObjectModel.ServiceModel.cmisObjectType> CreateDocumentFromSource(string repositoryId, string sourceId, cmisPropertiesType properties, string folderId, enumVersioningState? versioningState, string[] policies, cmisAccessControlListType addACEs, cmisAccessControlListType removeACEs)
+        {
+            return NotSupported_Internal("CreateDocumentFromSource");
+        }
+
+        protected override Result<CmisObjectModel.ServiceModel.cmisObjectType> CreateItem(string repositoryId, CmisObjectModel.Core.cmisObjectType newItem, string folderId, cmisAccessControlListType addACEs, cmisAccessControlListType removeACEs)
+        {
+            return NotSupported_Internal("CreateItem");
+        }
+
+        protected override Result<CmisObjectModel.ServiceModel.cmisObjectType> CreatePolicy(string repositoryId, CmisObjectModel.Core.cmisObjectType newPolicy, string folderId, cmisAccessControlListType addACEs, cmisAccessControlListType removeACEs)
+        {
+            return NotSupported_Internal("CreatePolicy");
+        }
+
+        protected override Result<CmisObjectModel.ServiceModel.cmisObjectType> CreateRelationship(string repositoryId, CmisObjectModel.Core.cmisObjectType newRelationship, cmisAccessControlListType addACEs, cmisAccessControlListType removeACEs)
+        {
+            return NotSupported_Internal("CreateRelationship");
+        }
+
+        protected override Result<cmisTypeDefinitionType> CreateType(string repositoryId, cmisTypeDefinitionType newType)
+        {
+            return NotSupported_Internal("CreateType");
+        }
+
+        protected override Result<deleteContentStreamResponse> DeleteContentStream(string repositoryId, string objectId, string changeToken)
+        {
+            return NotSupported_Internal("DeleteContentStream");
+        }
+
+        protected override Exception DeleteType(string repositoryId, string typeId)
+        {
+            NotSupported_Internal("DeleteType");
+            throw new NotImplementedException("DeleteType");
+        }
+
+        protected override Result<cmisAccessControlListType> GetACL(string repositoryId, string objectId, bool onlyBasicPermissions)
+        {
+            return NotSupported_Internal("GetACL");
+        }
+
+        protected override Result<CmisObjectModel.ServiceModel.cmisObjectListType> GetAppliedPolicies(string repositoryId, string objectId, string filter)
+        {
+            return NotSupported_Internal("GetAppliedPolicies");
+        }
+
+        protected override enumBaseObjectTypeIds GetBaseObjectType(string repositoryId, string objectId)
+        {
+            NotSupported_Internal("GetBaseObjectType");
+            throw new NotImplementedException("GetBaseObjectType");
+        }
+
+        protected override Result<CmisObjectModel.ServiceModel.cmisObjectListType> GetCheckedOutDocs(string repositoryId, string folderId, string filter, long? maxItems, long? skipCount, string renditionFilter, bool? includeAllowableActions, enumIncludeRelationships? includeRelationships)
+        {
+            return NotSupported_Internal("GetCheckedOutDocs");
+        }
+
+        protected override Result<getContentChanges> GetContentChanges(string repositoryId, string filter, long? maxItems, bool? includeACL, bool includePolicyIds, bool includeProperties, ref string changeLogToken)
+        {
+            return NotSupported_Internal("GetContentChanges");
+        }
+
+        protected override Result<CmisObjectModel.ServiceModel.cmisObjectInFolderContainerType> GetDescendants(string repositoryId, string folderId, string filter, long? depth, bool? includeAllowableActions, enumIncludeRelationships? includeRelationships, string renditionFilter, bool includePathSegment)
+        {
+            return NotSupported_Internal("GetDescendants");
+        }
+
+        protected override Result<CmisObjectModel.ServiceModel.cmisObjectInFolderContainerType> GetFolderTree(string repositoryId, string folderId, string filter, long? depth, bool? includeAllowableActions, enumIncludeRelationships? includeRelationships, bool includePathSegment, string renditionFilter)
+        {
+            return NotSupported_Internal("GetFolderTree");
+        }
+
+        protected override Result<CmisObjectModel.ServiceModel.cmisObjectListType> GetObjectRelationships(string repositoryId, string objectId, bool includeSubRelationshipTypes, enumRelationshipDirection? relationshipDirection, string typeId, long? maxItems, long? skipCount, string filter, bool? includeAllowableActions)
+        {
+            return NotSupported_Internal("GetObjectRelationships");
+        }
+
+        protected override Result<CmisObjectModel.ServiceModel.cmisObjectListType> GetUnfiledObjects(string repositoryId, long? maxItems, long? skipCount, string filter, bool? includeAllowableActions, enumIncludeRelationships? includeRelationships, string renditionFilter, string orderBy)
+        {
+            return NotSupported_Internal("GetUnfiledObjects");
+        }
+
+        protected override Result<CmisObjectModel.ServiceModel.cmisObjectType> MoveObject(string repositoryId, string objectId, string targetFolderId, string sourceFolderId)
+        {
+            return NotSupported_Internal("MoveObject");
+        }
+
+        protected override Result<CmisObjectModel.ServiceModel.cmisObjectListType> Query(string repositoryId, string q, bool searchAllVersions, enumIncludeRelationships? includeRelationships, string renditionFilter, bool includeAllowableActions, long? maxItems, long? skipCount)
+        {
+            return NotSupported_Internal("Query");
+        }
+
+        protected override Result<CmisObjectModel.ServiceModel.cmisObjectType> RemoveObjectFromFolder(string repositoryId, string objectId, string folderId)
+        {
+            return NotSupported_Internal("RemoveObjectFromFolder");
+        }
+
+        protected override Exception RemovePolicy(string repositoryId, string objectId, string policyId)
+        {
+            return NotSupported_Internal("RemovePolicy");
+        }
+
+        protected override Result<cmisTypeDefinitionType> UpdateType(string repositoryId, cmisTypeDefinitionType modifiedType)
+        {
+            return NotSupported_Internal("UpdateType");
+        }
+
+        #endregion
+
+    }
+}
