@@ -17,7 +17,9 @@ using CmisObjectModel.Messaging;
 using CmisObjectModel.Messaging.Responses;
 using CmisObjectModel.RestAtom;
 using CmisObjectModel.ServiceModel;
+using DocuWare.Platform.ServerClient;
 using Microsoft.VisualBasic.CompilerServices;
+using Microsoft.VisualBasic.Logging;
 
 namespace CmisServer
 {
@@ -30,6 +32,7 @@ namespace CmisServer
 /// </remarks>
     public partial class CmisServiceImpl : CmisServiceImplBase
     {
+        private static ServiceConnection conn = null;
 
         #region Logging and Errors
 
@@ -70,7 +73,14 @@ namespace CmisServer
         {
             // Log_Internal("ValidateUser", userName)
 
-            return userName.ToLower().Equals(password.ToLower()) || "guest".Equals(userName) || password.ToLower().Equals("patorg");
+            conn = Helpers.Docuware.Connect(userName, password);
+
+            if(conn != null)
+            {
+                return true;
+            }
+            else
+                return false;
         }
 
         #endregion
@@ -81,7 +91,42 @@ namespace CmisServer
         {
             Log_Internal("GetRepositories");
 
-            return new cmisRepositoryInfoType[] { get_RepositoryInfo(_repoid) };
+            Organization org = Helpers.Docuware.GetOrganization(conn);
+
+            UserInfo myUser = org.GetUserInfoFromUserInfoRelation();
+
+            var fileCabinets = org.GetFileCabinetsFromFilecabinetsRelation().FileCabinet.Where(m => m.IsBasket);
+
+            cmisRepositoryInfoType[] repos = new cmisRepositoryInfoType[fileCabinets.Count()];
+
+            var i = 0;
+
+            foreach (FileCabinet cab in fileCabinets)
+            {
+                cmisRepositoryInfoType _repository = new cmisRepositoryInfoType();
+
+                _repository.RepositoryId = cab.Name;
+                _repository.ProductName = "Demo CmisServicer";
+                _repository.ProductVersion = "1.0";
+                _repository.VendorName = "Brügmann Software GmbH";
+                _repository.RepositoryName = cab.Name;
+                _repository.RepositoryDescription = cab.Name + " (" + _repoid + ")";
+                _repository.RootFolderId = "root";
+                _repository.CmisVersionSupported = "1.1";
+                _repository.RepositoryUrl = BaseUri.ToString() + cab.Name;
+
+                _repository.PrincipalAnonymous = "guest";
+                _repository.PrincipalAnyone = "GROUP_EVERYONE";
+
+                _repository.Capabilities = new cmisRepositoryCapabilitiesType();
+                _repository.Capabilities.CapabilityPWCUpdatable = true;
+
+                repos[i] = _repository;
+
+                i++;
+            }
+
+            return repos;
         }
 
         public override Result<cmisRepositoryInfoType> GetRepositoryInfo(string repositoryId)
@@ -105,12 +150,7 @@ namespace CmisServer
 
         public override CmisObjectModel.Core.cmisRepositoryInfoType get_RepositoryInfo(string repositoryId)
         {
-            if (!_repoid.Equals(repositoryId))
-            {
-                throw new Exception("Repository " + repositoryId + " not exists. Use " + _repoid);
-            }
-
-            if (_repository is null)
+            if (!String.IsNullOrEmpty(repositoryId))
             {
                 _repository = new cmisRepositoryInfoType();
 
@@ -129,9 +169,11 @@ namespace CmisServer
 
                 _repository.Capabilities = new cmisRepositoryCapabilitiesType();
                 _repository.Capabilities.CapabilityPWCUpdatable = true;
-            }
 
-            return _repository;
+                return _repository;
+            }
+            else
+                throw new Exception("Repository " + repositoryId + " not exists. Use " + _repoid);
         }
 
         #endregion
