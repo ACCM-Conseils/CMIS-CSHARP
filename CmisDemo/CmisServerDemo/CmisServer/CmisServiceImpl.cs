@@ -95,7 +95,7 @@ namespace CmisServer
 
             UserInfo myUser = org.GetUserInfoFromUserInfoRelation();
 
-            var fileCabinets = org.GetFileCabinetsFromFilecabinetsRelation().FileCabinet.Where(m => m.IsBasket);
+            var fileCabinets = org.GetFileCabinetsFromFilecabinetsRelation().FileCabinet.Where(m => !m.IsBasket);
 
             cmisRepositoryInfoType[] repos = new cmisRepositoryInfoType[fileCabinets.Count()];
 
@@ -105,7 +105,7 @@ namespace CmisServer
             {
                 cmisRepositoryInfoType _repository = new cmisRepositoryInfoType();
 
-                _repository.RepositoryId = cab.Name;
+                _repository.RepositoryId = cab.Id;
                 _repository.ProductName = "Demo CmisServicer";
                 _repository.ProductVersion = "1.0";
                 _repository.VendorName = "Brügmann Software GmbH";
@@ -152,23 +152,30 @@ namespace CmisServer
         {
             if (!String.IsNullOrEmpty(repositoryId))
             {
+                Organization org = Helpers.Docuware.GetOrganization(conn);
+
+                UserInfo myUser = org.GetUserInfoFromUserInfoRelation();
+
+                FileCabinet defaultBasket = org.GetFileCabinetsFromFilecabinetsRelation().FileCabinet.FirstOrDefault(m => m.Id == repositoryId);
+
                 _repository = new cmisRepositoryInfoType();
 
-                _repository.RepositoryId = _repoid;
-                _repository.ProductName = "Demo CmisServicer";
+                _repository.RepositoryId = repositoryId;
+                _repository.ProductName = defaultBasket.Name;
                 _repository.ProductVersion = "1.0";
                 _repository.VendorName = "Brügmann Software GmbH";
-                _repository.RepositoryName = _reponame;
-                _repository.RepositoryDescription = _reponame + " (" + _repoid + ")";
+                _repository.RepositoryName = defaultBasket.Name;
+                _repository.RepositoryDescription = defaultBasket.Name + " (" + _repoid + ")";
                 _repository.RootFolderId = "root";
                 _repository.CmisVersionSupported = "1.1";
-                _repository.RepositoryUrl = BaseUri.ToString() + _repoid;
+                _repository.RepositoryUrl = BaseUri.ToString() + repositoryId;
 
                 _repository.PrincipalAnonymous = "guest";
                 _repository.PrincipalAnyone = "GROUP_EVERYONE";
 
                 _repository.Capabilities = new cmisRepositoryCapabilitiesType();
                 _repository.Capabilities.CapabilityPWCUpdatable = true;
+                _repository.Capabilities.CapabilityGetDescendants = true;
 
                 return _repository;
             }
@@ -183,7 +190,7 @@ namespace CmisServer
         protected override Result<cmisTypeDefinitionListType> GetTypeChildren(string repositoryId, string typeId, bool includePropertyDefinitions, long? maxItems, long? skipCount)
         {
             Log_Internal("GetTypeChildren", typeId);
-
+            
             var list = new cmisTypeDefinitionListType();
             list.NumItems = 0;
             return list;
@@ -797,7 +804,78 @@ namespace CmisServer
 
         protected override Result<CmisObjectModel.ServiceModel.cmisObjectInFolderContainerType> GetDescendants(string repositoryId, string folderId, string filter, long? depth, bool? includeAllowableActions, enumIncludeRelationships? includeRelationships, string renditionFilter, bool includePathSegment)
         {
-            return NotSupported_Internal("GetDescendants");
+            DocumentsQueryResult queryResult = conn.GetFromDocumentsForDocumentsQueryResultAsync(
+                repositoryId,
+                count: (int)10000)
+                .Result;
+
+            var children = new CmisObjectModel.ServiceModel.cmisObjectInFolderContainerType[queryResult.Items.Count];
+
+            int i = 0;
+            foreach (Document document in queryResult.Items)
+            {
+                Document doc = document.GetDocumentFromSelfRelation();
+
+                var serializer = new System.Xml.Serialization.XmlSerializer(typeof(CmisObjectModel.ServiceModel.cmisObjectType));
+                string xml = System.IO.File.ReadAllText(Helper.FindXmlPath("document.xml"));
+                CmisObjectModel.ServiceModel.cmisObjectType obj = (CmisObjectModel.ServiceModel.cmisObjectType)serializer.Deserialize(new System.IO.StringReader(xml));
+
+                // I. Grunddaten
+                obj.Name = doc.Title;
+                obj.ObjectId = doc.Id.ToString();
+                obj.Description = doc.Title;
+
+                // III. Änderungsdaten
+                obj.CreatedBy = "Unknown";
+                obj.CreationDate = doc.CreatedAt.ToUniversalTime();
+                obj.LastModifiedBy = "Unknown";
+                obj.LastModificationDate = doc.LastModified.ToUniversalTime();
+
+                // IV. Versionsinfo
+                obj.IsPrivateWorkingCopy = false;
+                obj.IsLatestVersion = true;
+                obj.IsMajorVersion = true;
+                obj.IsLatestMajorVersion = true;
+                obj.VersionLabel = doc.Version.Major.ToString();
+                obj.VersionSeriesId = doc.Id.ToString();
+
+                obj.IsVersionSeriesCheckedOut = false;
+
+                obj.CheckinComment = "";
+
+                // VI. Datei
+                /*obj.ContentStreamLength = info.Length;
+                obj.ContentStreamMimeType = meta.MimeType;
+                obj.ContentStreamFileName = name;
+                obj.ContentStreamId = objectId;
+
+                // VIII. Change Token
+                obj.ChangeToken = info.LastWriteTime.ToString();*/
+
+                obj.AllowableActions.CanDeleteObject = true;
+                obj.AllowableActions.CanUpdateProperties = true;
+                obj.AllowableActions.CanSetContentStream = true;
+                obj.AllowableActions.CanCancelCheckOut = true;
+                obj.AllowableActions.CanCheckIn = true;
+
+                CompleteObject(obj);
+
+                var child = new CmisObjectModel.ServiceModel.cmisObjectInFolderContainerType();
+                child.ObjectInFolder = new CmisObjectModel.ServiceModel.cmisObjectInFolderType()
+                {
+                    Object = obj
+                };
+                children[i] = child;
+
+                i++;
+            };
+
+            
+
+
+        var list = new CmisObjectModel.ServiceModel.cmisObjectInFolderContainerType();
+            list.Children = children;
+            return list;
         }
 
         protected override Result<CmisObjectModel.ServiceModel.cmisObjectInFolderContainerType> GetFolderTree(string repositoryId, string folderId, string filter, long? depth, bool? includeAllowableActions, enumIncludeRelationships? includeRelationships, bool includePathSegment, string renditionFilter)
