@@ -29,6 +29,7 @@ using ca = CmisObjectModel.AtomPub;
 // ***********************************************************************************************************************
 using CmisObjectModel.Common;
 using CmisObjectModel.Core;
+using System.ComponentModel;
 
 namespace CmisObjectModel.ServiceModel
 {
@@ -48,9 +49,9 @@ namespace CmisObjectModel.ServiceModel
 
         #region Helper classes
         /// <summary>
-      /// Summary of object properties in a bulkUpdateProperties-call
-      /// </summary>
-      /// <remarks></remarks>
+        /// Summary of object properties in a bulkUpdateProperties-call
+        /// </summary>
+        /// <remarks></remarks>
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public class BulkUpdatePropertiesExtension
         {

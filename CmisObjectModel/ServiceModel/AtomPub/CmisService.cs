@@ -5227,15 +5227,29 @@ namespace CmisObjectModel.ServiceModel.AtomPub
             }
             else
             {
-                /*return (from item in (cmisObjectInFolderListType)generatingGuidance.Objects
-                        let entry = CreateAtomEntry(generatingGuidance, item as Contracts.IServiceModelObject)
-                        where entry is not null
-                        select entry).ToList();*/
+                Type t = generatingGuidance.Objects.GetType();
 
-                return (from item in (cmisObjectInFolderContainerType[])generatingGuidance.Objects
-                        let entry = CreateAtomEntry(generatingGuidance, item as Contracts.IServiceModelObject)
-                        where entry is not null
-                        select entry).ToList();
+                if (t == typeof(cmisObjectInFolderListType))
+                {
+                    return (from item in (cmisObjectInFolderListType)generatingGuidance.Objects
+                            let entry = CreateAtomEntry(generatingGuidance, item as Contracts.IServiceModelObject)
+                            where entry is not null
+                            select entry).ToList();
+                }
+                else if (t == typeof(cmisObjectListType))
+                {
+                    return (from item in (cmisObjectListType)generatingGuidance.Objects
+                            let entry = CreateAtomEntry(generatingGuidance, item as Contracts.IServiceModelObject)
+                            where entry is not null
+                            select entry).ToList();
+                }
+                else
+                {
+                    return (from item in (cmisObjectInFolderContainerType)generatingGuidance.Objects
+                            let entry = CreateAtomEntry(generatingGuidance, item as Contracts.IServiceModelObject)
+                            where entry is not null
+                            select entry).ToList();
+                }
             }
         }
 

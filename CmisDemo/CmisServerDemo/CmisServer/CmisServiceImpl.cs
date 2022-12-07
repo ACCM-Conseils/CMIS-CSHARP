@@ -175,7 +175,8 @@ namespace CmisServer
 
                 _repository.Capabilities = new cmisRepositoryCapabilitiesType();
                 _repository.Capabilities.CapabilityPWCUpdatable = true;
-                _repository.Capabilities.CapabilityGetDescendants = true;
+                _repository.Capabilities.CapabilityGetDescendants = false;
+                _repository.Capabilities.CapabilityQuery = enumCapabilityQuery.metadataonly;
 
                 return _repository;
             }
@@ -804,78 +805,12 @@ namespace CmisServer
 
         protected override Result<CmisObjectModel.ServiceModel.cmisObjectInFolderContainerType> GetDescendants(string repositoryId, string folderId, string filter, long? depth, bool? includeAllowableActions, enumIncludeRelationships? includeRelationships, string renditionFilter, bool includePathSegment)
         {
-            DocumentsQueryResult queryResult = conn.GetFromDocumentsForDocumentsQueryResultAsync(
+            /*DocumentsQueryResult queryResult = conn.GetFromDocumentsForDocumentsQueryResultAsync(
                 repositoryId,
                 count: (int)10000)
-                .Result;
+                .Result;*/
 
-            var children = new CmisObjectModel.ServiceModel.cmisObjectInFolderContainerType[queryResult.Items.Count];
-
-            int i = 0;
-            foreach (Document document in queryResult.Items)
-            {
-                Document doc = document.GetDocumentFromSelfRelation();
-
-                var serializer = new System.Xml.Serialization.XmlSerializer(typeof(CmisObjectModel.ServiceModel.cmisObjectType));
-                string xml = System.IO.File.ReadAllText(Helper.FindXmlPath("document.xml"));
-                CmisObjectModel.ServiceModel.cmisObjectType obj = (CmisObjectModel.ServiceModel.cmisObjectType)serializer.Deserialize(new System.IO.StringReader(xml));
-
-                // I. Grunddaten
-                obj.Name = doc.Title;
-                obj.ObjectId = doc.Id.ToString();
-                obj.Description = doc.Title;
-
-                // III. Änderungsdaten
-                obj.CreatedBy = "Unknown";
-                obj.CreationDate = doc.CreatedAt.ToUniversalTime();
-                obj.LastModifiedBy = "Unknown";
-                obj.LastModificationDate = doc.LastModified.ToUniversalTime();
-
-                // IV. Versionsinfo
-                obj.IsPrivateWorkingCopy = false;
-                obj.IsLatestVersion = true;
-                obj.IsMajorVersion = true;
-                obj.IsLatestMajorVersion = true;
-                obj.VersionLabel = doc.Version.Major.ToString();
-                obj.VersionSeriesId = doc.Id.ToString();
-
-                obj.IsVersionSeriesCheckedOut = false;
-
-                obj.CheckinComment = "";
-
-                // VI. Datei
-                /*obj.ContentStreamLength = info.Length;
-                obj.ContentStreamMimeType = meta.MimeType;
-                obj.ContentStreamFileName = name;
-                obj.ContentStreamId = objectId;
-
-                // VIII. Change Token
-                obj.ChangeToken = info.LastWriteTime.ToString();*/
-
-                obj.AllowableActions.CanDeleteObject = true;
-                obj.AllowableActions.CanUpdateProperties = true;
-                obj.AllowableActions.CanSetContentStream = true;
-                obj.AllowableActions.CanCancelCheckOut = true;
-                obj.AllowableActions.CanCheckIn = true;
-
-                CompleteObject(obj);
-
-                var child = new CmisObjectModel.ServiceModel.cmisObjectInFolderContainerType();
-                child.ObjectInFolder = new CmisObjectModel.ServiceModel.cmisObjectInFolderType()
-                {
-                    Object = obj
-                };
-                children[i] = child;
-
-                i++;
-            };
-
-            
-
-
-        var list = new CmisObjectModel.ServiceModel.cmisObjectInFolderContainerType();
-            list.Children = children;
-            return list;
+            return NotSupported_Internal("GetDescendants");
         }
 
         protected override Result<CmisObjectModel.ServiceModel.cmisObjectInFolderContainerType> GetFolderTree(string repositoryId, string folderId, string filter, long? depth, bool? includeAllowableActions, enumIncludeRelationships? includeRelationships, bool includePathSegment, string renditionFilter)
@@ -900,7 +835,42 @@ namespace CmisServer
 
         protected override Result<CmisObjectModel.ServiceModel.cmisObjectListType> Query(string repositoryId, string q, bool searchAllVersions, enumIncludeRelationships? includeRelationships, string renditionFilter, bool includeAllowableActions, long? maxItems, long? skipCount)
         {
-            return NotSupported_Internal("Query");
+            if(q.ToLower().Contains("cmis:document"))
+            {
+                DocumentsQueryResult queryResult = conn.GetFromDocumentsForDocumentsQueryResultAsync(
+                repositoryId,
+                count: (int)10000)
+                .Result;
+
+                if (q.ToLower().Contains("where"))
+                {
+                    Document d = queryResult.Items.FirstOrDefault(m => m.Title == "Contrat de production").GetDocumentFromSelfRelation();
+
+                    CmisObjectModel.ServiceModel.cmisObjectListType results = new CmisObjectModel.ServiceModel.cmisObjectListType();
+
+                    List<CmisObjectModel.ServiceModel.cmisObjectType> files = new List<CmisObjectModel.ServiceModel.cmisObjectType>();
+                    files.Add(get_Object_InternalFromDocuware(d));
+
+                    results.Objects = files.ToArray();
+
+                    return results;
+                }
+                else
+                {
+                    Document d = queryResult.Items.FirstOrDefault(m => m.Title == "Contrat de production").GetDocumentFromSelfRelation();
+
+                    CmisObjectModel.ServiceModel.cmisObjectListType results = new CmisObjectModel.ServiceModel.cmisObjectListType();
+
+                    List<CmisObjectModel.ServiceModel.cmisObjectType> files = new List<CmisObjectModel.ServiceModel.cmisObjectType>();
+                    files.Add(get_Object_InternalFromDocuware(d));
+
+                    results.Objects = files.ToArray();
+
+                    return results;
+                }
+            }
+            else
+                return NotSupported_Internal("Query");
         }
 
         protected override Result<CmisObjectModel.ServiceModel.cmisObjectType> RemoveObjectFromFolder(string repositoryId, string objectId, string folderId)

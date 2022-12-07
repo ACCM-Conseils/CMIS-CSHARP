@@ -8,6 +8,7 @@ using CmisObjectModel.Core;
 using CmisObjectModel.Core.Collections;
 using CmisObjectModel.Core.Security;
 using CmisObjectModel.Messaging;
+using DocuWare.Platform.ServerClient;
 using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
 
@@ -330,6 +331,55 @@ namespace CmisServer
                 }
 
             }
+
+            CompleteObject(obj);
+
+            return obj;
+        }
+
+        public CmisObjectModel.ServiceModel.cmisObjectType get_Object_InternalFromDocuware(Document doc)
+        {
+            var serializer = new System.Xml.Serialization.XmlSerializer(typeof(CmisObjectModel.ServiceModel.cmisObjectType));
+            string xml = System.IO.File.ReadAllText(Helper.FindXmlPath("document.xml"));
+            CmisObjectModel.ServiceModel.cmisObjectType obj = (CmisObjectModel.ServiceModel.cmisObjectType)serializer.Deserialize(new System.IO.StringReader(xml));
+
+            // I. Grunddaten
+            obj.Name = doc.Title;
+            obj.ObjectId = doc.Id.ToString();
+            obj.Description = doc.Title;
+
+            // III. Änderungsdaten
+            obj.CreatedBy = "Unknown";
+            obj.CreationDate = doc.CreatedAt.ToUniversalTime();
+            obj.LastModifiedBy = "Unknown";
+            obj.LastModificationDate = doc.LastModified.ToUniversalTime();
+
+            // IV. Versionsinfo
+            obj.IsPrivateWorkingCopy = false;
+            obj.IsLatestVersion = true;
+            obj.IsMajorVersion = true;
+            obj.IsLatestMajorVersion = true;
+            obj.VersionLabel = doc.Version.Major.ToString();
+            obj.VersionSeriesId = doc.Id.ToString();
+
+            obj.IsVersionSeriesCheckedOut = false;
+
+            obj.CheckinComment = "";
+
+            // VI. Datei
+            /*obj.ContentStreamLength = info.Length;
+            obj.ContentStreamMimeType = meta.MimeType;
+            obj.ContentStreamFileName = name;
+            obj.ContentStreamId = objectId;
+
+            // VIII. Change Token
+            obj.ChangeToken = info.LastWriteTime.ToString();*/
+
+            obj.AllowableActions.CanDeleteObject = true;
+            obj.AllowableActions.CanUpdateProperties = true;
+            obj.AllowableActions.CanSetContentStream = true;
+            obj.AllowableActions.CanCancelCheckOut = true;
+            obj.AllowableActions.CanCheckIn = true;
 
             CompleteObject(obj);
 
