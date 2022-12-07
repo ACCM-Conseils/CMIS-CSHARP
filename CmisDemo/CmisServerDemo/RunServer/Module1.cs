@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.ServiceModel;
 using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
 
@@ -19,7 +20,7 @@ namespace RunServer
             Console.WriteLine(Environment.CommandLine);
             Console.WriteLine();
 
-            string url = string.Format(System.Configuration.ConfigurationManager.AppSettings["url"], Environment.MachineName.ToLower());
+            string url = string.Format(System.Configuration.ConfigurationManager.AppSettings["url"], System.Configuration.ConfigurationManager.AppSettings["domain"]);
 
             // Cmis-Service
             // ' ' ' ' ' ' '
@@ -53,7 +54,9 @@ namespace RunServer
             Console.WriteLine("Web-Service (URL-Templates)");
             string url_Web = url + "extra";
             var webHost = new System.ServiceModel.ServiceHost(typeof(WebServer.WebService), new Uri(url_Web));
-            webHost.AddServiceEndpoint(typeof(WebServer.IWebService), new System.ServiceModel.WebHttpBinding(), string.Empty);
+            var secureWebHttpBinding = new WebHttpBinding(WebHttpSecurityMode.Transport) { Name = "secureHttpWeb" };
+            //webHost.AddServiceEndpoint(typeof(WebServer.IWebService), secureWebHttpBinding, string.Empty);
+            webHost.AddServiceEndpoint(typeof(WebServer.IWebService), new WebHttpBinding(), string.Empty);
             webHost.Description.Endpoints.Single().Behaviors.Add(new System.ServiceModel.Description.WebHttpBehavior());
             webHost.Open();
             Console.WriteLine(" - Übersicht: " + url_Web + "/obj?id={0}");

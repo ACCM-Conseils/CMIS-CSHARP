@@ -17,7 +17,7 @@ namespace CmisServer
                 {
                     path = @"..\" + path;
                     if (path.Length > 400)
-                        throw new Exception("Xml-Vorlage '" + filename + "' nicht gefunden!");
+                        throw new Exception("Le fichier XML '" + filename + "' est introuvable !");
                 }
             }
 
