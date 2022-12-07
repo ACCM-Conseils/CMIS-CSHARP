@@ -5245,7 +5245,7 @@ namespace CmisObjectModel.ServiceModel.AtomPub
                 }
                 else
                 {
-                    return (from item in (cmisObjectInFolderContainerType)generatingGuidance.Objects
+                    return (from item in (cmisObjectInFolderContainerType[])generatingGuidance.Objects
                             let entry = CreateAtomEntry(generatingGuidance, item as Contracts.IServiceModelObject)
                             where entry is not null
                             select entry).ToList();

@@ -805,12 +805,33 @@ namespace CmisServer
 
         protected override Result<CmisObjectModel.ServiceModel.cmisObjectInFolderContainerType> GetDescendants(string repositoryId, string folderId, string filter, long? depth, bool? includeAllowableActions, enumIncludeRelationships? includeRelationships, string renditionFilter, bool includePathSegment)
         {
-            /*DocumentsQueryResult queryResult = conn.GetFromDocumentsForDocumentsQueryResultAsync(
+            DocumentsQueryResult queryResult = conn.GetFromDocumentsForDocumentsQueryResultAsync(
                 repositoryId,
                 count: (int)10000)
-                .Result;*/
+                .Result;
 
-            return NotSupported_Internal("GetDescendants");
+            List<CmisObjectModel.ServiceModel.cmisObjectInFolderContainerType> files = new List<CmisObjectModel.ServiceModel.cmisObjectInFolderContainerType>();
+
+            foreach (Document d in queryResult.Items)
+            {
+                Document doc = d.GetDocumentFromSelfRelation();
+
+                CmisObjectModel.ServiceModel.cmisObjectType obj = get_Object_InternalFromDocuware(doc);
+
+                files.Add(new CmisObjectModel.ServiceModel.cmisObjectInFolderContainerType()
+                {
+                    ObjectInFolder = new CmisObjectModel.ServiceModel.cmisObjectInFolderType()
+                    {
+                        Object = obj
+                    }
+                });
+            }
+
+
+            return new CmisObjectModel.ServiceModel.cmisObjectInFolderContainerType()
+            {
+                Children = files.ToArray()
+            };
         }
 
         protected override Result<CmisObjectModel.ServiceModel.cmisObjectInFolderContainerType> GetFolderTree(string repositoryId, string folderId, string filter, long? depth, bool? includeAllowableActions, enumIncludeRelationships? includeRelationships, bool includePathSegment, string renditionFilter)
