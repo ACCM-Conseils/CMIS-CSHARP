@@ -1,9 +1,11 @@
 ﻿using DocuWare.Platform.ServerClient;
+using DocuWare.Services.Http;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
@@ -27,21 +29,32 @@ namespace CmisServer.Helpers
         {
             if (document.FileDownloadRelationLink == null)
                 document = document.GetDocumentFromSelfRelation();
+            FileDownload dataToSend = (FileDownload)null;
 
-            var downloadResponse = document.PostToFileDownloadRelationForStreamAsync(
-                new FileDownload()
-                {
-                    TargetFileType = FileDownloadType.PDF
-                }).Result;
+                    FileDownload fileDownload1 = new FileDownload();
+                    fileDownload1.TargetFileType = FileDownloadType.PDF;
+                    fileDownload1.KeepAnnotations = false;
+                    fileDownload1.AutoPrint = false;
+                    dataToSend = fileDownload1;
+                    
+            DeserializedHttpResponse<Stream> result = document.PostToFileDownloadRelationForStreamAsync(dataToSend).Result;
+            HttpContentHeaders contentHeaders = result.ContentHeaders;
 
-            var contentHeaders = downloadResponse.ContentHeaders;
-            return new FileDownloadResult()
+            MemoryStream ms = new MemoryStream();
+            byte[] chunk = new byte[4096];
+            int bytesRead;
+            while ((bytesRead = result.Content.Read(chunk, 0, chunk.Length)) > 0)
             {
-                Stream = downloadResponse.Content,
-                ContentLength = contentHeaders.ContentLength,
-                ContentType = contentHeaders.ContentType.MediaType,
-                FileName = ((contentHeaders.ContentDisposition.FileName != null) ? contentHeaders.ContentDisposition.FileName : contentHeaders.ContentDisposition.FileNameStar)
-            };
+                ms.Write(chunk, 0, bytesRead);
+            }
+
+            return new FileDownloadResult()
+                {
+                    Stream = result.Content,
+                    ContentLength = ms.Length,
+                    ContentType = contentHeaders.ContentType.MediaType
+                };
+
         }
 
         public static string SerializeObject<T>(this T toSerialize)

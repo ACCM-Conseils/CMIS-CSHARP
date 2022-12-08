@@ -24,7 +24,7 @@ namespace RunServer
 
             // Cmis-Service
             // ' ' ' ' ' ' '
-            Console.WriteLine("Cmis-Service");
+            Console.WriteLine("Cmis-Service - Docuware");
 
             var cmisHost_AtomPub = new CmisObjectModel.ServiceModel.AtomPub.ServiceManager();
             string url_AomPub = url + "/atom";
@@ -38,15 +38,15 @@ namespace RunServer
 
             Console.WriteLine();
 
-            Console.WriteLine("Endpunkt-Beschreibung");
+            Console.WriteLine("Point de terminaison");
             Console.WriteLine(" - AtomPub: " + url_AomPub + "/help");
             // Console.WriteLine(" - Browser: " & url_Browser & "/help")
 
             Console.WriteLine();
 
-            Console.WriteLine("Weitere Eigenschaften");
+            Console.WriteLine("Autres caractéristiques");
             Console.WriteLine(" - RepositoryId: " + System.Configuration.ConfigurationManager.AppSettings["repoid"]);
-            Console.WriteLine(" - ObjectId des Root-Folders: root");
+            Console.WriteLine(" - Root-Folder: root");
             Console.WriteLine();
 
             // Web-Service
@@ -59,8 +59,8 @@ namespace RunServer
             webHost.AddServiceEndpoint(typeof(WebServer.IWebService), new WebHttpBinding(), string.Empty);
             webHost.Description.Endpoints.Single().Behaviors.Add(new System.ServiceModel.Description.WebHttpBehavior());
             webHost.Open();
-            Console.WriteLine(" - Übersicht: " + url_Web + "/obj?id={0}");
-            Console.WriteLine(" - Metadaten: " + url_Web + "/meta?id={0}");
+            Console.WriteLine(" - Aperçu: " + url_Web + "/obj?id={0}");
+            Console.WriteLine(" - Métadonnées: " + url_Web + "/meta?id={0}");
             Console.WriteLine(" - Download:  " + url_Web + "/file?id={0}");
             Console.WriteLine();
 

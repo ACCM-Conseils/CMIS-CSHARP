@@ -18,6 +18,7 @@ using CmisObjectModel.Messaging.Responses;
 using CmisObjectModel.RestAtom;
 using CmisObjectModel.ServiceModel;
 using DocuWare.Platform.ServerClient;
+using DocuWare.Services.Http;
 using Microsoft.VisualBasic.CompilerServices;
 using Microsoft.VisualBasic.Logging;
 
@@ -33,6 +34,7 @@ namespace CmisServer
     public partial class CmisServiceImpl : CmisServiceImplBase
     {
         private static ServiceConnection conn = null;
+        private static Organization org = null;
 
         #region Logging and Errors
 
@@ -77,6 +79,8 @@ namespace CmisServer
 
             if(conn != null)
             {
+                org = Helpers.Docuware.GetOrganization(conn);
+
                 return true;
             }
             else
@@ -160,6 +164,7 @@ namespace CmisServer
 
                 _repository = new cmisRepositoryInfoType();
 
+                _repoid = repositoryId;
                 _repository.RepositoryId = repositoryId;
                 _repository.ProductName = defaultBasket.Name;
                 _repository.ProductVersion = "1.0";
@@ -226,54 +231,28 @@ namespace CmisServer
 
             var children = new List<CmisObjectModel.ServiceModel.cmisObjectInFolderType>();
 
-            string path = System.IO.Path.Combine(_folder, "root".Equals(folderId) ? string.Empty : folderId);
+            DocumentsQueryResult queryResult = conn.GetFromDocumentsForDocumentsQueryResultAsync(
+                repositoryId,
+                count: (int)1)
+                .Result;
 
-            if (System.IO.File.Exists(System.IO.Path.Combine(path, "metadata")))
+            foreach (Document d in queryResult.Items)
             {
-                return cmisFaultType.CreateInvalidArgumentException("'" + folderId + "' is not a folder.");
-            }
-            else if (System.IO.Directory.Exists(path))
-            {
-                IEnumerable folders = System.IO.Directory.EnumerateDirectories(path);
-                foreach (string folder in folders)
-                {
-                    if (System.IO.Directory.Exists(System.IO.Path.Combine(folder, "Versionen")))
+                try
+                {     
+                    CmisObjectModel.ServiceModel.cmisObjectType obj = get_Object_InternalFromDocuware(d);
+
+                    children.Add(new CmisObjectModel.ServiceModel.cmisObjectInFolderType()
                     {
-
-                        // Dokument
-
-                        var child = new CmisObjectModel.ServiceModel.cmisObjectInFolderType();
-                        child.Object = get_Object_Internal(folder.Replace(_folder + @"\", string.Empty));
-
-                        children.Add(child);
-                    }
-
-                    if (System.IO.File.Exists(System.IO.Path.Combine(folder, "pwc")))
-                    {
-
-                        // Arbeitskopie
-
-                        var meta = get_DocumentMetadata_Internal(folder.Replace(_folder + @"\", string.Empty));
-                        if (CurrentAuthenticationInfo.User.Equals(meta.VersionSeriesCheckedOutBy))
+                        Object = new CmisObjectModel.ServiceModel.cmisObjectInFolderType()
                         {
-                            var child = new CmisObjectModel.ServiceModel.cmisObjectInFolderType();
-                            child.Object = get_Object_Internal(folder.Replace(_folder + @"\", string.Empty) + ";pwc");
-
-                            children.Add(child);
+                            Object = obj
                         }
+                    });
+                }
+                catch(Exception e)
+                {
 
-                    }
-
-                    if (!System.IO.Directory.Exists(System.IO.Path.Combine(folder, "Versionen")) && !System.IO.File.Exists(System.IO.Path.Combine(folder, "pwc")))
-                    {
-
-                        // Ordner
-
-                        var child = new CmisObjectModel.ServiceModel.cmisObjectInFolderType();
-                        child.Object = get_Object_Internal(folder.Replace(_folder + @"\", string.Empty));
-
-                        children.Add(child);
-                    }
                 }
             }
 
@@ -452,27 +431,29 @@ namespace CmisServer
         {
             Log_Internal("GetContentStream", objectId);
 
-            int pos = objectId.LastIndexOf(";");
-            string versionSeriesId = pos > 0 ? objectId.Substring(0, pos) : objectId;
+            var fileCabinets = org.GetFileCabinetsFromFilecabinetsRelation().FileCabinet;
 
-            var meta = get_DocumentMetadata_Internal(versionSeriesId);
+            var defaultBasket = fileCabinets.FirstOrDefault(f => !f.IsBasket && f.Id == repositoryId);
 
-            string path;
-            if (objectId.EndsWith(";pwc"))
-            {
-                path = System.IO.Path.Combine(_folder, versionSeriesId, "pwc");
-            }
-            else
-            {
-                path = System.IO.Path.Combine(_folder, versionSeriesId, "Versionen", meta.LabelOfLatestVersion);
-            }
+            var dialogInfoItems = defaultBasket.GetDialogInfosFromSearchesRelation();
+            var dialog = dialogInfoItems.Dialog.FirstOrDefault(m => m.IsDefault).GetDialogFromSelfRelation();
 
-            using (var stream = new System.IO.FileStream(path, System.IO.FileMode.Open))
+            var q = new DialogExpression()
             {
-                var content = new cmisContentStreamType(stream, versionSeriesId.Split('\\').Last(), get_DocumentMetadata_Internal(objectId).MimeType);
+                Condition = new List<DialogExpressionCondition>()
+                        {
+                            DialogExpressionCondition.Create("DWDOCID", objectId )
+                        },
+                Count = 1
+            };
+
+            var queryResult = dialog.Query.PostToDialogExpressionRelationForDocumentsQueryResult(q);
+
+            var downloadedFile = Helpers.Docuware.DownloadDocumentContent(queryResult.Items.First());
+
+                var content = new cmisContentStreamType(downloadedFile.Stream, downloadedFile.FileName, downloadedFile.ContentType);
 
                 return content;
-            }
         }
 
         protected override Result<setContentStreamResponse> SetContentStream(string repositoryId, string objectId, System.IO.Stream contentStream, string mimeType, string fileName, bool overwriteFlag, string changeToken)

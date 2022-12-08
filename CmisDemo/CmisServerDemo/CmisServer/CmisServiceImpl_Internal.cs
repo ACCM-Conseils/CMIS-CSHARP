@@ -9,6 +9,7 @@ using CmisObjectModel.Core.Collections;
 using CmisObjectModel.Core.Security;
 using CmisObjectModel.Messaging;
 using DocuWare.Platform.ServerClient;
+using DocuWare.Services.Http;
 using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
 
@@ -200,7 +201,9 @@ namespace CmisServer
 
             var serializer = new System.Xml.Serialization.XmlSerializer(typeof(CmisObjectModel.ServiceModel.cmisObjectType));
             string xml = System.IO.File.ReadAllText(Helper.FindXmlPath(xmlTemplate + ".xml"));
-            CmisObjectModel.ServiceModel.cmisObjectType obj = (CmisObjectModel.ServiceModel.cmisObjectType)serializer.Deserialize(new System.IO.StringReader(xml));
+            CmisObjectModel.ServiceModel.cmisObjectType obj = null;
+            
+            obj = (CmisObjectModel.ServiceModel.cmisObjectType)serializer.Deserialize(new System.IO.StringReader(xml));
 
             if ("Stammverzeichnis".Equals(objTyp))
             {
@@ -337,11 +340,18 @@ namespace CmisServer
             return obj;
         }
 
-        public CmisObjectModel.ServiceModel.cmisObjectType get_Object_InternalFromDocuware(Document doc)
+        public CmisObjectModel.ServiceModel.cmisObjectType get_Object_InternalFromDocuware(Document d)
         {
+
+            Document doc = d.GetDocumentFromSelfRelation();
+
+            var downloadedFile = Helpers.Docuware.DownloadDocumentContent(doc);
+
             var serializer = new System.Xml.Serialization.XmlSerializer(typeof(CmisObjectModel.ServiceModel.cmisObjectType));
             string xml = System.IO.File.ReadAllText(Helper.FindXmlPath("document.xml"));
-            CmisObjectModel.ServiceModel.cmisObjectType obj = (CmisObjectModel.ServiceModel.cmisObjectType)serializer.Deserialize(new System.IO.StringReader(xml));
+            CmisObjectModel.ServiceModel.cmisObjectType obj = null;
+            
+            obj = (CmisObjectModel.ServiceModel.cmisObjectType)serializer.Deserialize(new System.IO.StringReader(xml));
 
             // I. Grunddaten
             obj.Name = doc.Title;
@@ -367,13 +377,13 @@ namespace CmisServer
             obj.CheckinComment = "";
 
             // VI. Datei
-            /*obj.ContentStreamLength = info.Length;
-            obj.ContentStreamMimeType = meta.MimeType;
-            obj.ContentStreamFileName = name;
-            obj.ContentStreamId = objectId;
+            obj.ContentStreamLength = downloadedFile.ContentLength;
+            obj.ContentStreamMimeType = downloadedFile.ContentType;
+            obj.ContentStreamFileName = downloadedFile.FileName;
+            obj.ContentStreamId = doc.Id.ToString();
 
             // VIII. Change Token
-            obj.ChangeToken = info.LastWriteTime.ToString();*/
+            /*obj.ChangeToken = info.LastWriteTime.ToString();*/
 
             obj.AllowableActions.CanDeleteObject = true;
             obj.AllowableActions.CanUpdateProperties = true;
