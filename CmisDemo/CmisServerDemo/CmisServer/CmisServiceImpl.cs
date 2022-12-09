@@ -35,6 +35,7 @@ namespace CmisServer
     {
         private static ServiceConnection conn = null;
         private static Organization org = null;
+        private static string currentRepository = null;
 
         #region Logging and Errors
 
@@ -135,6 +136,8 @@ namespace CmisServer
 
         public override Result<cmisRepositoryInfoType> GetRepositoryInfo(string repositoryId)
         {
+            currentRepository = repositoryId;
+
             Log_Internal("GetRepositoryInfo", repositoryId);
 
             return get_RepositoryInfo(repositoryId);

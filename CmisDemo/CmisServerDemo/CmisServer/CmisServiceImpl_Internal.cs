@@ -155,185 +155,30 @@ namespace CmisServer
 
         public CmisObjectModel.ServiceModel.cmisObjectType get_Object_Internal(string objectId)
         {
-            if (!"root".Equals(objectId) && !get_Exists_Internal(objectId))
+            var fileCabinets = org.GetFileCabinetsFromFilecabinetsRelation().FileCabinet;
+
+            var defaultBasket = fileCabinets.FirstOrDefault(f => !f.IsBasket && f.Id == currentRepository);
+
+            var dialogInfoItems = defaultBasket.GetDialogInfosFromSearchesRelation();
+            var dialog = dialogInfoItems.Dialog.FirstOrDefault(m => m.IsDefault).GetDialogFromSelfRelation();
+
+            var q = new DialogExpression()
+            {
+                Condition = new List<DialogExpressionCondition>()
+                        {
+                            DialogExpressionCondition.Create("DWDOCID", objectId )
+                        },
+                Count = 1
+            };
+
+            var queryResult = dialog.Query.PostToDialogExpressionRelationForDocumentsQueryResult(q);
+
+            if (queryResult.Items.Count() == 0)
             {
                 throw cmisFaultType.CreateNotFoundException(objectId);
             }
 
-            // Objekt-Art bestimmen
-            string objTyp = null;
-            string xmlTemplate = null;
-            if ("root".Equals(objectId))
-            {
-
-                objTyp = "Stammverzeichnis";
-                xmlTemplate = "folder";
-            }
-
-            else if (objectId.EndsWith(";pwc"))
-            {
-
-                objTyp = "Arbeitskopie";
-                xmlTemplate = "document";
-            }
-
-            else if (objectId.Contains(";") && objectId.LastIndexOf(";") < objectId.LastIndexOf("."))
-            {
-
-                objTyp = "Version";
-                xmlTemplate = "document";
-            }
-
-            else if (System.IO.Directory.Exists(System.IO.Path.Combine(_folder, objectId, "Versionen")))
-            {
-
-                objTyp = "Dokument";
-                xmlTemplate = "document";
-            }
-
-            else
-            {
-
-                objTyp = "Ordner";
-                xmlTemplate = "folder";
-
-            }
-
-            var serializer = new System.Xml.Serialization.XmlSerializer(typeof(CmisObjectModel.ServiceModel.cmisObjectType));
-            string xml = System.IO.File.ReadAllText(Helper.FindXmlPath(xmlTemplate + ".xml"));
-            CmisObjectModel.ServiceModel.cmisObjectType obj = (CmisObjectModel.ServiceModel.cmisObjectType)serializer.Deserialize(new System.IO.StringReader(xml));
-
-            if ("Stammverzeichnis".Equals(objTyp))
-            {
-
-                var info = new System.IO.DirectoryInfo(_folder);
-
-                // I. Grunddaten
-                obj.Name = "Root";
-                obj.ObjectId = "root";
-                obj.Description = "Stammverzeichnis " + _folder;
-
-                // III. Änderungsdaten
-                obj.CreationDate = info.CreationTime.ToUniversalTime();
-                obj.LastModificationDate = info.LastWriteTime.ToUniversalTime();
-
-                // VII. Ordner
-                obj.Path = "/";
-
-                // VIII. Change Token
-                obj.ChangeToken = info.LastWriteTime.ToUniversalTime().ToString();
-
-                // Erlaubte Aktionen anpassen
-                obj.AllowableActions.CanDeleteObject = false;
-            }
-
-            else if ("Ordner".Equals(objTyp))
-            {
-
-                var info = new System.IO.DirectoryInfo(System.IO.Path.Combine(_folder, objectId));
-                string path = "/" + objectId.Replace(@"\", "/");
-                string name = objectId.Split('\\').Last();
-
-                // I. Grunddaten
-                obj.Name = name;
-                obj.ObjectId = objectId;
-                obj.Description = "Lokales Verzeichnis";
-
-                // III. Änderungsdaten
-                obj.CreationDate = info.CreationTime.ToUniversalTime();
-                obj.LastModificationDate = info.LastWriteTime.ToUniversalTime();
-
-                // VII. Ordner
-                obj.Path = path;
-                obj.ParentId = get_ParentFolderId_Internal(objectId);
-
-                // VIII. Change Token
-                obj.ChangeToken = info.LastWriteTime.ToUniversalTime().ToString();
-            }
-
-            else
-            {
-
-                int pos = objectId.LastIndexOf(";");
-                bool isLatest = pos == -1;
-                string versionSeriesId = isLatest ? objectId : objectId.Substring(0, pos);
-                string name = versionSeriesId.Split('\\').Last();
-                var meta = get_DocumentMetadata_Internal(versionSeriesId);
-                string version = isLatest ? meta.LabelOfLatestVersion : objectId.Substring(pos + 1);
-                bool isPwc = "pwc".Equals(version);
-                bool visiblePwc = meta.IsVersionSeriesCheckedOut && meta.VersionSeriesCheckedOutBy.Equals(CurrentAuthenticationInfo.User);
-                var info = new System.IO.FileInfo(System.IO.Path.Combine(_folder, versionSeriesId, isPwc ? string.Empty : "Versionen", version));
-                string isMajor = Conversions.ToString(!isPwc && version.EndsWith(".0"));
-                bool isLatestMajor = !isPwc && Conversions.ToBoolean(isMajor) && version.StartsWith(meta.MajorOfLatestVersion.ToString());
-
-                // I. Grunddaten
-                obj.Name = name;
-                obj.ObjectId = objectId;
-                obj.Description = isPwc ? meta.DescriptionPwc : meta.Description;
-                obj.Properties.GetProperties("patorg:akte").First().Value.Values = isPwc ? meta.AktePwc : meta.Akte;
-
-                // III. Änderungsdaten
-                obj.CreatedBy = meta.CreatedBy;
-                obj.CreationDate = meta.CreationDate.ToUniversalTime();
-                obj.LastModifiedBy = isLatest || isPwc ? meta.LastModifiedBy : "- nicht geseichert -";
-                obj.LastModificationDate = (isLatest || isPwc ? meta.LastModificationDate : info.LastWriteTime).ToUniversalTime();
-
-                // IV. Versionsinfo
-                obj.IsPrivateWorkingCopy = isPwc;
-                obj.IsLatestVersion = isLatest;
-                obj.IsMajorVersion = System.Convert.ToBoolean(isMajor);
-                obj.IsLatestMajorVersion = isLatestMajor;
-                obj.VersionLabel = isLatest ? meta.LabelOfLatestVersion : version;
-                obj.VersionSeriesId = versionSeriesId;
-
-                // V. Versionierung
-                if (meta.IsVersionSeriesCheckedOut)
-                {
-                    obj.IsVersionSeriesCheckedOut = true;
-                    obj.VersionSeriesCheckedOutBy = meta.VersionSeriesCheckedOutBy;
-                    if (CurrentAuthenticationInfo.User.Equals(meta.VersionSeriesCheckedOutBy))
-                    {
-                        obj.VersionSeriesCheckedOutId = versionSeriesId + ";pwc";
-                    }
-                }
-                else
-                {
-                    obj.IsVersionSeriesCheckedOut = false;
-                }
-                obj.CheckinComment = meta.GetComment(version);
-
-                // VI. Datei
-                obj.ContentStreamLength = info.Length;
-                obj.ContentStreamMimeType = meta.MimeType;
-                obj.ContentStreamFileName = name;
-                obj.ContentStreamId = objectId;
-
-                // VIII. Change Token
-                obj.ChangeToken = info.LastWriteTime.ToString();
-
-                // Erlaubte Aktionen anpassen
-                if ("Arbeitskopie".Equals(objTyp))
-                {
-                    obj.AllowableActions.CanDeleteObject = true;
-                    obj.AllowableActions.CanUpdateProperties = true;
-                    obj.AllowableActions.CanSetContentStream = true;
-                    obj.AllowableActions.CanCancelCheckOut = true;
-                    obj.AllowableActions.CanCheckIn = true;
-                }
-                else if ("Dokument".Equals(objTyp))
-                {
-                    if (!meta.IsVersionSeriesCheckedOut)
-                    {
-                        obj.AllowableActions.CanDeleteObject = true;
-                        obj.AllowableActions.CanCheckOut = true;
-                        obj.AllowableActions.CanUpdateProperties = true;
-                    }
-
-                }
-
-            }
-
-            CompleteObject(obj);
+            CmisObjectModel.ServiceModel.cmisObjectType obj = get_Object_InternalFromDocuware(queryResult.Items.FirstOrDefault());
 
             return obj;
         }
