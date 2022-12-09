@@ -30,13 +30,16 @@ using ca = CmisObjectModel.AtomPub;
 using CmisObjectModel.Common;
 using CmisObjectModel.Core;
 using System.ComponentModel;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using Newtonsoft.Json;
 
 namespace CmisObjectModel.ServiceModel
 {
     public class cmisObjectType : Core.cmisObjectType, Contracts.IServiceModelObject
     {
 
-        [Obsolete("Constructor defined for serialization usage only", true)]
+        //[Obsolete("Constructor defined for serialization usage only", true)]
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public cmisObjectType() : base()
         {
@@ -45,6 +48,31 @@ namespace CmisObjectModel.ServiceModel
         public cmisObjectType(ServiceModelExtension serviceModel, params Core.Properties.cmisProperty[] properties) : base(properties)
         {
             _serviceModel = serviceModel ?? new ServiceModelExtension(this);
+        }        
+
+        public cmisObjectType(string Name, String ObjectId, String Description) : base()
+        {
+            _serviceModel = new ServiceModelExtension(null);
+            this.Name = Name;
+            this.ObjectId = ObjectId;
+            this.Description = Description;           
+        }
+
+        public static string FindXmlPath(string filename)
+        {
+            string path = filename;
+            if (!System.IO.File.Exists(path))
+            {
+                path = @"Xml\" + path;
+                while (!System.IO.File.Exists(path))
+                {
+                    path = @"..\" + path;
+                    if (path.Length > 400)
+                        throw new Exception("Le fichier XML '" + filename + "' est introuvable !");
+                }
+            }
+
+            return path;
         }
 
         #region Helper classes
@@ -53,6 +81,7 @@ namespace CmisObjectModel.ServiceModel
         /// </summary>
         /// <remarks></remarks>
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        
         public class BulkUpdatePropertiesExtension
         {
 
@@ -124,9 +153,10 @@ namespace CmisObjectModel.ServiceModel
         }
 
         /// <summary>
-      /// Summary of the objects properties to allow the system to create AtomPub-Links
-      /// </summary>
-      /// <remarks></remarks>
+        /// Summary of the objects properties to allow the system to create AtomPub-Links
+        /// </summary>
+        /// <remarks></remarks>
+        /// 
         public class ServiceModelExtension
         {
 

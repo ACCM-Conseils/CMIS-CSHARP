@@ -32,11 +32,13 @@ using CmisObjectModel.Common;
 namespace CmisObjectModel.Core
 {
     /// <summary>
-   /// </summary>
-   /// <remarks>
-   /// see cmisObjectType
-   /// in http://docs.oasis-open.org/cmis/CMIS/v1.1/cs01/schema/CMIS-Core.xsd
-   /// </remarks>
+    /// </summary>
+    /// <remarks>
+    /// see cmisObjectType
+    /// in http://docs.oasis-open.org/cmis/CMIS/v1.1/cs01/schema/CMIS-Core.xsd
+    /// </remarks>
+    /// 
+    
     public partial class cmisObjectType : Serialization.XmlSerializable
     {
 

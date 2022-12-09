@@ -27,6 +27,7 @@ using sxs = System.Xml.Serialization;
 // * If not, see <http://www.gnu.org/licenses/lgpl.txt>.
 // ***********************************************************************************************************************
 using CmisObjectModel.Common;
+using System;
 
 namespace CmisObjectModel.Core.Security
 {

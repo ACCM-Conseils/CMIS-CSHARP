@@ -43,6 +43,7 @@ namespace CmisObjectModel.Serialization
    /// </remarks>
     [Attributes.JavaScriptConverter(typeof(JSON.Serialization.Generic.XmlSerializerConverter<Core.cmisObjectType>), "{\"\":\"TSerializable\"}")]
     [Attributes.JavaScriptObjectResolver(typeof(JSON.Serialization.Generic.DefaultObjectResolver<Core.cmisObjectType>), "{\"\":\"T\"}")]
+
     public abstract class XmlSerializable : sc.INotifyPropertyChanged, sxs.IXmlSerializable
     {
 
@@ -1059,9 +1060,10 @@ return CommonFunctions.TryParse(reader.ReadElementString(), ref value, true) ? v
     }
 
     /// <summary>
-   /// XmlSerializable class with aspects before and after ReadXmlCore() and WriteXmlCore()
-   /// </summary>
-   /// <remarks></remarks>
+    /// XmlSerializable class with aspects before and after ReadXmlCore() and WriteXmlCore()
+    /// </summary>
+    /// <remarks></remarks>
+    /// 
     public abstract class XmlSerializableWithIOAspects : XmlSerializable
     {
 

@@ -201,9 +201,7 @@ namespace CmisServer
 
             var serializer = new System.Xml.Serialization.XmlSerializer(typeof(CmisObjectModel.ServiceModel.cmisObjectType));
             string xml = System.IO.File.ReadAllText(Helper.FindXmlPath(xmlTemplate + ".xml"));
-            CmisObjectModel.ServiceModel.cmisObjectType obj = null;
-            
-            obj = (CmisObjectModel.ServiceModel.cmisObjectType)serializer.Deserialize(new System.IO.StringReader(xml));
+            CmisObjectModel.ServiceModel.cmisObjectType obj = (CmisObjectModel.ServiceModel.cmisObjectType)serializer.Deserialize(new System.IO.StringReader(xml));
 
             if ("Stammverzeichnis".Equals(objTyp))
             {
@@ -349,9 +347,7 @@ namespace CmisServer
 
             var serializer = new System.Xml.Serialization.XmlSerializer(typeof(CmisObjectModel.ServiceModel.cmisObjectType));
             string xml = System.IO.File.ReadAllText(Helper.FindXmlPath("document.xml"));
-            CmisObjectModel.ServiceModel.cmisObjectType obj = null;
-            
-            obj = (CmisObjectModel.ServiceModel.cmisObjectType)serializer.Deserialize(new System.IO.StringReader(xml));
+            CmisObjectModel.ServiceModel.cmisObjectType obj = (CmisObjectModel.ServiceModel.cmisObjectType)serializer.Deserialize(new System.IO.StringReader(xml));
 
             // I. Grunddaten
             obj.Name = doc.Title;
@@ -383,7 +379,7 @@ namespace CmisServer
             obj.ContentStreamId = doc.Id.ToString();
 
             // VIII. Change Token
-            /*obj.ChangeToken = info.LastWriteTime.ToString();*/
+            obj.ChangeToken = doc.LastModified.Ticks.ToString();
 
             obj.AllowableActions.CanDeleteObject = true;
             obj.AllowableActions.CanUpdateProperties = true;

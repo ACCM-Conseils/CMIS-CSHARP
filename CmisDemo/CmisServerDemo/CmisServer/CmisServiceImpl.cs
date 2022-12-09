@@ -233,20 +233,23 @@ namespace CmisServer
 
             DocumentsQueryResult queryResult = conn.GetFromDocumentsForDocumentsQueryResultAsync(
                 repositoryId,
-                count: (int)1)
+                count: (int)1000)
                 .Result;
 
-            foreach (Document d in queryResult.Items)
+            CmisObjectModel.ServiceModel.cmisObjectType[] liste = new CmisObjectModel.ServiceModel.cmisObjectType[queryResult.Items.Count];
+            Document[] listeDocuware = queryResult.Items.ToArray();
+
+            for(int i=0; i < listeDocuware.Length; i++)
             {
                 try
-                {     
-                    CmisObjectModel.ServiceModel.cmisObjectType obj = get_Object_InternalFromDocuware(d);
+                {
+                    liste[i] = get_Object_InternalFromDocuware(listeDocuware[i]);
 
                     children.Add(new CmisObjectModel.ServiceModel.cmisObjectInFolderType()
                     {
                         Object = new CmisObjectModel.ServiceModel.cmisObjectInFolderType()
                         {
-                            Object = obj
+                            Object = liste[i]
                         }
                     });
                 }
@@ -451,7 +454,7 @@ namespace CmisServer
 
             var downloadedFile = Helpers.Docuware.DownloadDocumentContent(queryResult.Items.First());
 
-                var content = new cmisContentStreamType(downloadedFile.Stream, downloadedFile.FileName, downloadedFile.ContentType);
+                var content = new cmisContentStreamType(downloadedFile.Stream, objectId+".pdf", downloadedFile.ContentType);
 
                 return content;
         }
