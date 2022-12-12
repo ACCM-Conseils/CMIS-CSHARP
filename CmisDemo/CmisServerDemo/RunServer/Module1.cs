@@ -55,8 +55,8 @@ namespace RunServer
             string url_Web = url + "extra";
             var webHost = new System.ServiceModel.ServiceHost(typeof(WebServer.WebService), new Uri(url_Web));
             var secureWebHttpBinding = new WebHttpBinding(WebHttpSecurityMode.Transport) { Name = "secureHttpWeb" };
-            //webHost.AddServiceEndpoint(typeof(WebServer.IWebService), secureWebHttpBinding, string.Empty);
-            webHost.AddServiceEndpoint(typeof(WebServer.IWebService), new System.ServiceModel.WebHttpBinding(), string.Empty);
+            webHost.AddServiceEndpoint(typeof(WebServer.IWebService), secureWebHttpBinding, string.Empty);
+            //webHost.AddServiceEndpoint(typeof(WebServer.IWebService), new System.ServiceModel.WebHttpBinding(), string.Empty);
             webHost.Description.Endpoints.Single().Behaviors.Add(new System.ServiceModel.Description.WebHttpBehavior());
             webHost.Open();
             Console.WriteLine(" - Aperçu: " + url_Web + "/obj?id={0}");
