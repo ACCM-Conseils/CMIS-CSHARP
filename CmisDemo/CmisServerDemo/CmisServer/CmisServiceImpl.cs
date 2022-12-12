@@ -841,18 +841,40 @@ namespace CmisServer
             return NotSupported_Internal("MoveObject");
         }
 
-        protected override Result<CmisObjectModel.ServiceModel.cmisObjectListType> Query(string repositoryId, string q, bool searchAllVersions, enumIncludeRelationships? includeRelationships, string renditionFilter, bool includeAllowableActions, long? maxItems, long? skipCount)
+        protected override Result<CmisObjectModel.ServiceModel.cmisObjectListType> Query(string repositoryId, string query, bool searchAllVersions, enumIncludeRelationships? includeRelationships, string renditionFilter, bool includeAllowableActions, long? maxItems, long? skipCount)
         {
-            if(q.ToLower().Contains("cmis:document"))
+            if(query.ToLower().Contains("cmis:document"))
             {
                 DocumentsQueryResult queryResult = conn.GetFromDocumentsForDocumentsQueryResultAsync(
                 repositoryId,
                 count: (int)10000)
                 .Result;
 
-                if (q.ToLower().Contains("where"))
+                if (query.ToLower().Contains("where"))
                 {
-                    Document d = queryResult.Items.FirstOrDefault(m => m.Title == "Contrat de production").GetDocumentFromSelfRelation();
+                    int index = query.IndexOf("mdata");
+
+                    String toFind = query.Remove(0, index + 6);
+
+                    String[] indexValue = toFind.Replace(" ","").Split('=');
+
+                    var fileCabinets = org.GetFileCabinetsFromFilecabinetsRelation().FileCabinet;
+
+                    var defaultBasket = fileCabinets.FirstOrDefault(f => !f.IsBasket && f.Id == repositoryId);
+
+                    var dialogInfoItems = defaultBasket.GetDialogInfosFromSearchesRelation();
+                    var dialog = dialogInfoItems.Dialog.FirstOrDefault(m => m.IsDefault).GetDialogFromSelfRelation();
+
+                    var q = new DialogExpression()
+                    {
+                        Condition = new List<DialogExpressionCondition>()
+                        {
+                            DialogExpressionCondition.Create(indexValue[0], indexValue[1])
+                        },
+                        Count = 1
+                    };
+
+                    Document d = queryResult.Items.FirstOrDefault();
 
                     CmisObjectModel.ServiceModel.cmisObjectListType results = new CmisObjectModel.ServiceModel.cmisObjectListType();
 
@@ -865,16 +887,7 @@ namespace CmisServer
                 }
                 else
                 {
-                    Document d = queryResult.Items.FirstOrDefault(m => m.Title == "Contrat de production").GetDocumentFromSelfRelation();
-
-                    CmisObjectModel.ServiceModel.cmisObjectListType results = new CmisObjectModel.ServiceModel.cmisObjectListType();
-
-                    List<CmisObjectModel.ServiceModel.cmisObjectType> files = new List<CmisObjectModel.ServiceModel.cmisObjectType>();
-                    files.Add(get_Object_InternalFromDocuware(d));
-
-                    results.Objects = files.ToArray();
-
-                    return results;
+                    return NotSupported_Internal("Query");
                 }
             }
             else
