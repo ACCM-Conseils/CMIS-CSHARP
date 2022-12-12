@@ -48,9 +48,12 @@ namespace CmisServer.Helpers
                 ms.Write(chunk, 0, bytesRead);
             }
 
+            ms.Position = 0L;
+
             return new FileDownloadResult()
                 {
-                    Stream = result.Content,
+                    FileName = result.GetFileName(),
+                    Stream = ms,
                     ContentLength = ms.Length,
                     ContentType = contentHeaders.ContentType.MediaType
                 };

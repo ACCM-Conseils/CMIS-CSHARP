@@ -457,7 +457,7 @@ namespace CmisServer
 
             var downloadedFile = Helpers.Docuware.DownloadDocumentContent(queryResult.Items.First());
 
-                var content = new cmisContentStreamType(downloadedFile.Stream, objectId+".pdf", downloadedFile.ContentType);
+                var content = new cmisContentStreamType(downloadedFile.Stream, downloadedFile.FileName, downloadedFile.ContentType);
 
                 return content;
         }
