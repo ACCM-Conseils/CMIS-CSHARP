@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 
 // Werte der Assemblyattribute überprüfen
 
-[assembly: AssemblyTitle("Programm zum Starten des CmisServers")]
+[assembly: AssemblyTitle("CMIS Server Docuware")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyCompany("Brügmann Software GmbH")]
 [assembly: AssemblyProduct("RunServer")]

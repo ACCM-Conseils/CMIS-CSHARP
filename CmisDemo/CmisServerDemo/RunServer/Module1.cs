@@ -64,8 +64,17 @@ namespace RunServer
             Console.WriteLine(" - Download:  " + url_Web + "/file?id={0}");
             Console.WriteLine();
 
+            bool result;
 
-            Console.WriteLine("running...");
+            // Checking the process is running in user
+            // interactive mode or not
+            // Using the UserInteractive property
+            result = Environment.UserInteractive;
+
+            if(result)
+                Console.WriteLine("running in interactive mode ...");
+            else
+                Console.WriteLine("running in non interactive mode...");
             Console.WriteLine("Ctrl+C for exit");
             Console.WriteLine();
 
