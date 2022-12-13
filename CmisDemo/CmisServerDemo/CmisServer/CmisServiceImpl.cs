@@ -845,11 +845,6 @@ namespace CmisServer
         {
             if(query.ToLower().Contains("cmis:document"))
             {
-                DocumentsQueryResult queryResult = conn.GetFromDocumentsForDocumentsQueryResultAsync(
-                repositoryId,
-                count: (int)10000)
-                .Result;
-
                 if (query.ToLower().Contains("where"))
                 {
                     int index = query.IndexOf("mdata");
@@ -873,6 +868,8 @@ namespace CmisServer
                         },
                         Count = 1
                     };
+
+                    var queryResult = dialog.Query.PostToDialogExpressionRelationForDocumentsQueryResult(q);
 
                     Document d = queryResult.Items.FirstOrDefault();
 
