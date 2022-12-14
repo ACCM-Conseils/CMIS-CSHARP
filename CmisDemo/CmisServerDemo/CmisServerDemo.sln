@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CmisObjectModel", "..\..\Cm
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleCMIS", "ConsoleCMIS\ConsoleCMIS.csproj", "{7D7DBCEE-74F9-4297-B6DA-8B6B356AB606}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunServerService", "RunServerService\RunServerService.csproj", "{5572FABF-544B-4FBC-925A-C638EC68021C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +49,10 @@ Global
 		{7D7DBCEE-74F9-4297-B6DA-8B6B356AB606}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7D7DBCEE-74F9-4297-B6DA-8B6B356AB606}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7D7DBCEE-74F9-4297-B6DA-8B6B356AB606}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5572FABF-544B-4FBC-925A-C638EC68021C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5572FABF-544B-4FBC-925A-C638EC68021C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5572FABF-544B-4FBC-925A-C638EC68021C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5572FABF-544B-4FBC-925A-C638EC68021C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
