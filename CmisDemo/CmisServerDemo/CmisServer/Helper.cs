@@ -9,16 +9,10 @@ namespace CmisServer
 
         public static string FindXmlPath(string filename)
         {
-            string path = filename;
+            string path = System.Configuration.ConfigurationManager.AppSettings["XMLPath"] + @"Xml\" + filename;
             if (!System.IO.File.Exists(path))
             {
-                path = @"Xml\" + path;
-                while (!System.IO.File.Exists(path))
-                {
-                    path = @"..\" + path;
-                    if (path.Length > 400)
-                        throw new Exception("Le fichier XML '" + filename + "' est introuvable !");
-                }
+                throw new Exception("Le fichier XML '" + filename + "' est introuvable dans " + path + " !");
             }
 
             return path;

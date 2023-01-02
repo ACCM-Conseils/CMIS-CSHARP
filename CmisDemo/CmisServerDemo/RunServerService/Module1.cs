@@ -41,6 +41,7 @@ namespace RunServer
 
         public static void launch()
         {
+            Thread.Sleep(10000);
             log.Info(Environment.CommandLine);
 
             string url = string.Format(System.Configuration.ConfigurationManager.AppSettings["url"], System.Configuration.ConfigurationManager.AppSettings["domain"]);

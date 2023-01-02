@@ -214,7 +214,7 @@ namespace CmisObjectModel.ServiceModel.Base
                         }
                     }
                 }
-                catch
+                catch(Exception ex)
                 {
                 }
             }
