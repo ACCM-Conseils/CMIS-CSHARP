@@ -1,7 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel;
+using System.ServiceModel.Channels;
+using System.ServiceModel.Description;
 using System.ServiceProcess;
 using System.Threading;
 using Microsoft.VisualBasic;
@@ -73,11 +76,26 @@ namespace RunServer
             log.Info("Web-Service (URL-Templates)");
             string url_Web = url + "extra";
             log.Info(" - Web: " + url_Web);
+
+            /*log.Info("Recherche certificat");
+
+            X509Certificate2Collection coll = FindCerts("*.altexence.net");
+
+            log.Info("Certificat trouvé : "+coll.Count);*/
+
             var webHost = new System.ServiceModel.ServiceHost(typeof(WebServer.WebService), new Uri(url_Web));
+
             var secureWebHttpBinding = new WebHttpBinding(WebHttpSecurityMode.Transport) { Name = "secureHttpWeb" };
-            //webHost.AddServiceEndpoint(typeof(WebServer.IWebService), secureWebHttpBinding, string.Empty);
-            webHost.AddServiceEndpoint(typeof(WebServer.IWebService), new System.ServiceModel.WebHttpBinding(), string.Empty);
+            //secureWebHttpBinding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Certificate;
+            webHost.AddServiceEndpoint(typeof(WebServer.IWebService), secureWebHttpBinding, string.Empty);
+            //webHost.AddServiceEndpoint(typeof(WebServer.IWebService), new System.ServiceModel.WebHttpBinding(), string.Empty);
             webHost.Description.Endpoints.Single().Behaviors.Add(new System.ServiceModel.Description.WebHttpBehavior());
+            /*webHost.Credentials.ServiceCertificate.SetCertificate(
+            StoreLocation.LocalMachine, StoreName.My,
+            X509FindType.FindBySubjectName, "*.altexence.net");
+            webHost.Credentials.ClientCertificate.SetCertificate(
+            StoreLocation.LocalMachine, StoreName.My,
+            X509FindType.FindBySubjectName, "*.altexence.net");*/
             webHost.Open();
             log.Info(" - Aperçu: " + url_Web + "/obj?id={0}");
             log.Info(" - Métadonnées: " + url_Web + "/meta?id={0}");
@@ -122,7 +140,20 @@ namespace RunServer
 
             }
         }
+        public static X509Certificate2Collection FindCerts(string serialNumber)
+        {
+            var searchType = X509FindType.FindBySerialNumber;
+            var storeName = "MY";
 
+            var certificatesStore = new X509Store(storeName, StoreLocation.LocalMachine);
+            certificatesStore.Open(OpenFlags.OpenExistingOnly);
+
+            var matchingCertificates = certificatesStore.Certificates.Find(searchType, serialNumber, true);
+
+            certificatesStore.Close();
+
+            return matchingCertificates;
+        }
         public static void Start(string[] args)
         {
             System.Threading.Tasks.Task.Run(() => launch());
