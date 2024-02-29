@@ -19,7 +19,7 @@ namespace CmisServer
     public partial class CmisServiceImpl
     {
 
-        private static string _repourl = System.Configuration.ConfigurationManager.AppSettings["url"];
+        private static string _repourl = String.Format(System.Configuration.ConfigurationManager.AppSettings["url"], System.Configuration.ConfigurationManager.AppSettings["domain"]);
         private static string _repoid = System.Configuration.ConfigurationManager.AppSettings["repoid"];
         private static string _reponame = System.Configuration.ConfigurationManager.AppSettings["reponame"];
         private static string _folder = System.Configuration.ConfigurationManager.AppSettings["folder"];
@@ -86,7 +86,7 @@ namespace CmisServer
         {
             get
             {
-                return new System.ServiceModel.Syndication.SyndicationPerson("demo@cmis.bsw", "CmisServer Demo", "http://demo.bsw/cmis");
+                return new System.ServiceModel.Syndication.SyndicationPerson("clement.maldonado@altexence.pro", "CmisServer Docuware", String.Format(System.Configuration.ConfigurationManager.AppSettings["url"]+"/atom/", System.Configuration.ConfigurationManager.AppSettings["domain"]));
             }
         }
 

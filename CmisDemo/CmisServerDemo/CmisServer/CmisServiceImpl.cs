@@ -111,14 +111,14 @@ namespace CmisServer
                 cmisRepositoryInfoType _repository = new cmisRepositoryInfoType();
 
                 _repository.RepositoryId = cab.Id;
-                _repository.ProductName = "Demo CmisServicer";
+                _repository.ProductName = "CMIS Server Docuware";
                 _repository.ProductVersion = "1.0";
-                _repository.VendorName = "Brügmann Software GmbH";
+                _repository.VendorName = "Altexence";
                 _repository.RepositoryName = cab.Name;
                 _repository.RepositoryDescription = cab.Name + " (" + _repoid + ")";
                 _repository.RootFolderId = "root";
                 _repository.CmisVersionSupported = "1.1";
-                _repository.RepositoryUrl = BaseUri.ToString() + cab.Name;
+                _repository.RepositoryUrl = BaseUri.ToString() + _repoid;
 
                 _repository.PrincipalAnonymous = "guest";
                 _repository.PrincipalAnyone = "GROUP_EVERYONE";
