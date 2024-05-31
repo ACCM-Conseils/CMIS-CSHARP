@@ -3,8 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using CmisObjectModel.Client;
 // Diese Datei enthält alle Funktionen, die vom CmisObjectModel aufgerufen werden.
 
@@ -171,7 +173,7 @@ namespace CmisServer
                 _repository.RepositoryId = repositoryId;
                 _repository.ProductName = defaultBasket.Name;
                 _repository.ProductVersion = "1.0";
-                _repository.VendorName = "Brügmann Software GmbH";
+                _repository.VendorName = "CMIS Docuware Altexence";
                 _repository.RepositoryName = defaultBasket.Name;
                 _repository.RepositoryDescription = defaultBasket.Name + " (" + _repoid + ")";
                 _repository.RootFolderId = "root";
@@ -517,10 +519,21 @@ namespace CmisServer
 
             string name = newDocument.Name;
             string description = newDocument.Description;
-            string[] akte = null;
-            if (newDocument.GetProperties("patorg:akte").Count > 0)
+
+            List<DocumentIndexField> metavalues = new List<DocumentIndexField>();
+
+            if (newDocument.GetProperties("docuware:metavalues").Count > 0)
             {
-                akte = (string[])newDocument.GetProperties("patorg:akte").First().Value.Values;
+                var pairs = newDocument.GetProperties("docuware:metavalues").First().Value;
+
+                String[] metavals = pairs.Value.ToString().Split('|');
+
+                foreach(string val in metavals)
+                {
+                    string[] indexes = val.Split('=');
+
+                    metavalues.Add(DocumentIndexField.Create(indexes[0], indexes[1]));
+                }
             }
 
             string mimeType = null;
@@ -560,16 +573,18 @@ namespace CmisServer
                 originalObjectId = System.IO.Path.Combine(folderId, name);
             }
 
-            if (get_Exists_Internal(originalObjectId))
+            /*if (get_Exists_Internal(originalObjectId))
             {
                 throw new Exception("Object '" + originalObjectId + "' already exists!");
-            }
+            }*/
 
-            System.IO.Directory.CreateDirectory(path);
-            if (!(versioningState == enumVersioningState.checkedout))
+            if(!System.IO.Directory.Exists(System.IO.Path.Combine(_folder, folderId)))
+                System.IO.Directory.CreateDirectory(System.IO.Path.Combine(_folder, folderId));
+
+            /*if (!(versioningState == enumVersioningState.checkedout))
             {
                 System.IO.Directory.CreateDirectory(System.IO.Path.Combine(path, "Versionen"));
-            }
+            }*/
 
             // 3. Metadaten
 
@@ -587,17 +602,17 @@ namespace CmisServer
             {
                 meta.VersionSeriesCheckedOutBy = CurrentAuthenticationInfo.User;
                 meta.DescriptionPwc = description;
-                meta.AktePwc = akte;
+                //meta.AktePwc = akte;
             }
             else
             {
                 meta.Description = description;
-                meta.Akte = akte;
+                //meta.Akte = akte;
                 meta.AddComment("create");
             }
 
             string xml = Conversions.ToString(meta.ToXml());
-            System.IO.File.WriteAllText(System.IO.Path.Combine(path, "metadata"), xml);
+            /*System.IO.File.WriteAllText(System.IO.Path.Combine(path, "metadata"), xml);
 
             // 4. Content
 
@@ -609,18 +624,13 @@ namespace CmisServer
             else
             {
                 contentPath = System.IO.Path.Combine(path, "Versionen", meta.LabelOfLatestVersion);
-            }
+            }*/
 
             if (content is not null && content.BinaryStream is not null)
             {
-                using (var fileStream = new System.IO.FileStream(contentPath, System.IO.FileMode.Create))
-                {
-                    content.BinaryStream.CopyTo(fileStream);
-                }
-            }
-            else
-            {
-                System.IO.File.Create(contentPath).Dispose();
+                string filToCreate = System.IO.Path.Combine(_folder, folderId, name);
+
+                System.IO.File.WriteAllBytes(filToCreate, ReadFully(content.BinaryStream));
             }
 
             // 5. Rückgabewert
@@ -636,8 +646,32 @@ namespace CmisServer
                 objectId = CheckOut_Internal(checkedInId);
             }
 
-            return get_Object_Internal(objectId);
+            var fileCabinet = org.GetFileCabinetsFromFilecabinetsRelation().FileCabinet.FirstOrDefault(m => m.Id == folderId);
+
+            var indexData = new Document()
+            {
+                Fields = metavalues
+            };
+
+            var uploadedDocument = fileCabinet.UploadDocument(indexData, new FileInfo(path));
+
+            return get_Object_Internal(uploadedDocument.Id.ToString());
         }
+
+        public static byte[] ReadFully(Stream input)
+        {
+            byte[] buffer = new byte[16 * 1024];
+            using (MemoryStream ms = new MemoryStream())
+            {
+                int read;
+                while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    ms.Write(buffer, 0, read);
+                }
+                return ms.ToArray();
+            }
+        }
+
 
         protected override Exception DeleteObject(string repositoryId, string objectId, bool allVersions)
         {
@@ -647,41 +681,11 @@ namespace CmisServer
             {
                 return new Exception("Object '" + objectId + "' not exists!");
             }
-
             Exception ex = null;
 
-            if (objectId.EndsWith(";pwc"))
-            {
-                CancelCheckOut_Internal(objectId);
-            }
-            else
-            {
-                string versionSeriesId;
-                if (objectId.Contains(";"))
-                {
-                    int pos = objectId.LastIndexOf(";");
-                    versionSeriesId = objectId.Substring(0, pos);
-                }
-                else
-                {
-                    versionSeriesId = objectId;
-                }
+            var document = conn.GetFromDocumentForDocumentAsync(System.Convert.ToInt32(objectId), currentRepository).Result;
 
-                var obj = get_Object_Internal(versionSeriesId);
-                if ("cmis:document".Equals(obj.ObjectTypeId) && !allVersions)
-                    return NotSupported_Internal("DeleteObject(allVersions=False, cmis:objectTypeId=cmis:document");
-
-                try
-                {
-                    string path = System.IO.Path.Combine(_folder, versionSeriesId);
-
-                    System.IO.Directory.Delete(path, true);
-                }
-                catch
-                {
-                }
-
-            }
+            document.Content.DeleteSelfRelation();
 
             return ex;
         }
@@ -843,15 +847,18 @@ namespace CmisServer
 
         protected override Result<CmisObjectModel.ServiceModel.cmisObjectListType> Query(string repositoryId, string query, bool searchAllVersions, enumIncludeRelationships? includeRelationships, string renditionFilter, bool includeAllowableActions, long? maxItems, long? skipCount)
         {
-            if(query.ToLower().Contains("cmis:document"))
+            if (query.ToLower().Contains("cmis:document"))
             {
                 if (query.ToLower().Contains("where"))
                 {
-                    int index = query.IndexOf("mdata");
+                    //MDPH51
+                    //int index = query.IndexOf("mdata");
 
-                    String toFind = query.Remove(0, index + 6);
+                    int index = query.IndexOf("=");
 
-                    String[] indexValue = toFind.Replace(" ","").Split('=');
+                    String toFind = query.Remove(0, index + 1);
+
+                    String[] indexValue = toFind.Replace(" ", "").Split('=');
 
                     var fileCabinets = org.GetFileCabinetsFromFilecabinetsRelation().FileCabinet;
 
@@ -886,6 +893,12 @@ namespace CmisServer
                 {
                     return NotSupported_Internal("Query");
                 }
+            }
+            else if (query.ToLower().Contains("cmis:folder"))
+            {
+                CmisObjectModel.ServiceModel.cmisObjectListType results = new CmisObjectModel.ServiceModel.cmisObjectListType();
+
+                return results;
             }
             else
                 return NotSupported_Internal("Query");

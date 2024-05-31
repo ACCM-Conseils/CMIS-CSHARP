@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Security.Cryptography;
+
 // Diese Datei enthält alle Funktionen, die intern aufgerufen werden.
 
 using CmisObjectModel.Core;
@@ -133,52 +135,48 @@ namespace CmisServer
                 return false;
             }
 
-            int pos = objectId.LastIndexOf(";");
-            string versionSeriesId = pos > 0 ? objectId.Substring(0, pos) : objectId;
-            bool isPwc = objectId.EndsWith(";pwc");
-            bool isVersion = !isPwc && objectId.Contains(";") && pos < objectId.LastIndexOf(".");
-            string path = System.IO.Path.Combine(_folder, versionSeriesId);
-            if (isPwc)
-            {
-                path = System.IO.Path.Combine(path, "pwc");
-                return System.IO.File.Exists(path);
-            }
-            else if (isVersion)
-            {
-                path = System.IO.Path.Combine(path, "Versionen", objectId.Substring(pos + 1));
-                return System.IO.File.Exists(path);
-            }
-            bool versionExists = System.IO.Directory.Exists(System.IO.Path.Combine(path, "Versionen"));
-            bool pwcExists = System.IO.File.Exists(System.IO.Path.Combine(path, "pwc"));
-            return System.IO.Directory.Exists(path) && (versionExists || !pwcExists && !versionExists);
+            var document = conn.GetFromDocumentForDocumentAsync(System.Convert.ToInt32(objectId), currentRepository).Result;
+
+            return (document.StatusCode == System.Net.HttpStatusCode.OK) ? true : false;
         }
 
         public CmisObjectModel.ServiceModel.cmisObjectType get_Object_Internal(string objectId)
         {
-            var fileCabinets = org.GetFileCabinetsFromFilecabinetsRelation().FileCabinet;
+            CmisObjectModel.ServiceModel.cmisObjectType obj = null;
 
-            var defaultBasket = fileCabinets.FirstOrDefault(f => !f.IsBasket && f.Id == currentRepository);
-
-            var dialogInfoItems = defaultBasket.GetDialogInfosFromSearchesRelation();
-            var dialog = dialogInfoItems.Dialog.FirstOrDefault(m => m.IsDefault).GetDialogFromSelfRelation();
-
-            var q = new DialogExpression()
+            if (!string.IsNullOrEmpty(objectId) && objectId != "root")
             {
-                Condition = new List<DialogExpressionCondition>()
+                var fileCabinets = org.GetFileCabinetsFromFilecabinetsRelation().FileCabinet;
+
+                var defaultBasket = fileCabinets.FirstOrDefault(f => !f.IsBasket && f.Id == currentRepository);
+
+                var dialogInfoItems = defaultBasket.GetDialogInfosFromSearchesRelation();
+                var dialog = dialogInfoItems.Dialog.FirstOrDefault(m => m.IsDefault).GetDialogFromSelfRelation();
+
+                var q = new DialogExpression()
+                {
+                    Condition = new List<DialogExpressionCondition>()
                         {
                             DialogExpressionCondition.Create("DWDOCID", objectId )
                         },
-                Count = 1
-            };
+                    Count = 1
+                };
 
-            var queryResult = dialog.Query.PostToDialogExpressionRelationForDocumentsQueryResult(q);
+                var queryResult = dialog.Query.PostToDialogExpressionRelationForDocumentsQueryResult(q);
 
-            if (queryResult.Items.Count() == 0)
-            {
-                throw cmisFaultType.CreateNotFoundException(objectId);
+                if (queryResult.Items.Count() == 0)
+                {
+                    throw cmisFaultType.CreateNotFoundException(objectId);
+                }
+                else
+                {
+                    obj = get_Object_InternalFromDocuware(queryResult.Items.FirstOrDefault());
+                }
             }
-
-            CmisObjectModel.ServiceModel.cmisObjectType obj = get_Object_InternalFromDocuware(queryResult.Items.FirstOrDefault());
+            else
+            {
+                obj = get_Fake_Folder(currentRepository);
+            }
 
             return obj;
         }
@@ -194,18 +192,15 @@ namespace CmisServer
             string xml = System.IO.File.ReadAllText(Helper.FindXmlPath("document.xml"));
             CmisObjectModel.ServiceModel.cmisObjectType obj = (CmisObjectModel.ServiceModel.cmisObjectType)serializer.Deserialize(new System.IO.StringReader(xml));
 
-            // I. Grunddaten
             obj.Name = doc.Title;
             obj.ObjectId = doc.Id.ToString();
             obj.Description = doc.Title;
 
-            // III. Änderungsdaten
             obj.CreatedBy = "Unknown";
             obj.CreationDate = doc.CreatedAt.ToUniversalTime();
             obj.LastModifiedBy = "Unknown";
             obj.LastModificationDate = doc.LastModified.ToUniversalTime();
 
-            // IV. Versionsinfo
             obj.IsPrivateWorkingCopy = false;
             obj.IsLatestVersion = true;
             obj.IsMajorVersion = true;
@@ -217,14 +212,92 @@ namespace CmisServer
 
             obj.CheckinComment = "";
 
-            // VI. Datei
             obj.ContentStreamLength = downloadedFile.ContentLength;
             obj.ContentStreamMimeType = downloadedFile.ContentType;
             obj.ContentStreamFileName = downloadedFile.FileName;
             obj.ContentStreamId = doc.Id.ToString();
 
-            // VIII. Change Token
             obj.ChangeToken = doc.LastModified.Ticks.ToString();
+
+            obj.AllowableActions.CanDeleteObject = true;
+            obj.AllowableActions.CanUpdateProperties = true;
+            obj.AllowableActions.CanSetContentStream = true;
+            obj.AllowableActions.CanCancelCheckOut = true;
+            obj.AllowableActions.CanCheckIn = true;
+
+            CompleteObject(obj);
+
+            return obj;
+        }
+
+        public CmisObjectModel.ServiceModel.cmisObjectType get_Object_InternalFromDocuwareID(string DWDOCID)
+        {
+
+            var document = conn.GetFromDocumentForDocumentAsync(System.Convert.ToInt32(DWDOCID), currentRepository).Result;
+
+            Document doc = document.Content.GetDocumentFromSelfRelation();
+
+            var downloadedFile = Helpers.Docuware.DownloadDocumentContent(doc);
+
+            var serializer = new System.Xml.Serialization.XmlSerializer(typeof(CmisObjectModel.ServiceModel.cmisObjectType));
+            string xml = System.IO.File.ReadAllText(Helper.FindXmlPath("document.xml"));
+            CmisObjectModel.ServiceModel.cmisObjectType obj = (CmisObjectModel.ServiceModel.cmisObjectType)serializer.Deserialize(new System.IO.StringReader(xml));
+
+            obj.Name = doc.Title;
+            obj.ObjectId = doc.Id.ToString();
+            obj.Description = doc.Title;
+
+            obj.CreatedBy = "Unknown";
+            obj.CreationDate = doc.CreatedAt.ToUniversalTime();
+            obj.LastModifiedBy = "Unknown";
+            obj.LastModificationDate = doc.LastModified.ToUniversalTime();
+
+            obj.IsPrivateWorkingCopy = false;
+            obj.IsLatestVersion = true;
+            obj.IsMajorVersion = true;
+            obj.IsLatestMajorVersion = true;
+            obj.VersionLabel = doc.Version.Major.ToString();
+            obj.VersionSeriesId = doc.Id.ToString();
+
+            obj.IsVersionSeriesCheckedOut = false;
+
+            obj.CheckinComment = "";
+
+            obj.ContentStreamLength = downloadedFile.ContentLength;
+            obj.ContentStreamMimeType = downloadedFile.ContentType;
+            obj.ContentStreamFileName = downloadedFile.FileName;
+            obj.ContentStreamId = doc.Id.ToString();
+
+            obj.ChangeToken = doc.LastModified.Ticks.ToString();
+
+            obj.AllowableActions.CanDeleteObject = true;
+            obj.AllowableActions.CanUpdateProperties = true;
+            obj.AllowableActions.CanSetContentStream = true;
+            obj.AllowableActions.CanCancelCheckOut = true;
+            obj.AllowableActions.CanCheckIn = true;
+
+            CompleteObject(obj);
+
+            return obj;
+        }
+
+        public CmisObjectModel.ServiceModel.cmisObjectType get_Fake_Folder(string currentRepository)
+        {
+
+            var serializer = new System.Xml.Serialization.XmlSerializer(typeof(CmisObjectModel.ServiceModel.cmisObjectType));
+            string xml = System.IO.File.ReadAllText(Helper.FindXmlPath("folder.xml"));
+            CmisObjectModel.ServiceModel.cmisObjectType obj = (CmisObjectModel.ServiceModel.cmisObjectType)serializer.Deserialize(new System.IO.StringReader(xml));
+
+            obj.Name = "Filecabinet";
+            obj.ObjectId = currentRepository;
+            obj.Description = "Docuware";
+
+            obj.CreatedBy = "Unknown";
+            obj.CreationDate = DateTime.Now.ToUniversalTime();
+            obj.LastModifiedBy = "Unknown";
+            obj.LastModificationDate = DateTime.Now.ToUniversalTime();
+
+            obj.ChangeToken = DateTime.Now.Ticks.ToString();
 
             obj.AllowableActions.CanDeleteObject = true;
             obj.AllowableActions.CanUpdateProperties = true;
