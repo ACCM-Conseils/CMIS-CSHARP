@@ -12,8 +12,10 @@ using CmisObjectModel.Core.Security;
 using CmisObjectModel.Messaging;
 using DocuWare.Platform.ServerClient;
 using DocuWare.Services.Http;
+using iTextSharp.text;
 using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
+using Document = DocuWare.Platform.ServerClient.Document;
 
 namespace CmisServer
 {
@@ -430,7 +432,7 @@ namespace CmisServer
             }
             else
             {
-                Document doc = queryResult.Items.FirstOrDefault();
+                DocuWare.Platform.ServerClient.Document doc = queryResult.Items.FirstOrDefault();
 
                 List<DocumentIndexField> metavalues = new List<DocumentIndexField>();
 
@@ -448,10 +450,13 @@ namespace CmisServer
                         }
                     }
 
-                    
+                    var fields = new DocumentIndexFields()
+                    {
+                        Field = metavalues
+                    };
+
+                    doc.PutToFieldsRelationForDocumentIndexFields(fields);
                 }
-
-
             }
 
         }
