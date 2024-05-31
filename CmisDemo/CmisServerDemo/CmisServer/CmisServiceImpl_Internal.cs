@@ -170,7 +170,26 @@ namespace CmisServer
                 }
                 else
                 {
-                    obj = get_Object_InternalFromDocuware(queryResult.Items.FirstOrDefault());
+                    Document doc = queryResult.Items.FirstOrDefault();
+
+                    List<DocumentIndexField> metalist = doc.Fields;
+                    List<string> metastring = new List<string>();
+
+                    var count = 0;
+
+                    foreach (DocumentIndexField index in metalist)
+                    {
+                        if(!index.FieldName.StartsWith("DW") && !index.FieldName.StartsWith("@"))
+                        {
+                            string meta = index.FieldName + "=" + ((index.Item != null) ? index.Item.ToString() : "");
+
+                            metastring.Add(meta);
+                        }
+                    }
+
+                    obj = get_Object_InternalFromDocuware(doc);
+
+                    obj.Properties.GetProperties("docuware:metavalues").First().Value.Values = metastring.ToArray();
                 }
             }
             else
@@ -387,57 +406,54 @@ namespace CmisServer
 
         public void UpdateProperties_Internal(string objectId, CmisObjectModel.Core.Collections.cmisPropertiesType properties, string changeToken)
         {
+            var fileCabinets = org.GetFileCabinetsFromFilecabinetsRelation().FileCabinet;
 
-            var meta = get_DocumentMetadata_Internal(objectId);
+            var defaultBasket = fileCabinets.FirstOrDefault(f => !f.IsBasket && f.Id == currentRepository);
 
-            if (objectId.EndsWith(";pwc"))
+            var dialogInfoItems = defaultBasket.GetDialogInfosFromSearchesRelation();
+            var dialog = dialogInfoItems.Dialog.FirstOrDefault(m => m.IsDefault).GetDialogFromSelfRelation();
+
+            var q = new DialogExpression()
             {
-                if (properties.GetProperties("cmis:description").Count > 0)
-                {
-                    meta.DescriptionPwc = properties.GetProperties("cmis:description").Values.First().Value.ToString();
-                }
-                if (properties.GetProperties("patorg:akte").Count > 0)
-                {
-                    CmisObjectModel.Core.Properties.cmisProperty prop = properties.GetProperties("patorg:akte").Values.First();
-                    if (prop.Values is null)
-                    {
-                        meta.AktePwc = null;
-                    }
-                    else
-                    {
-                        meta.AktePwc = (from obj in prop.Values
-                                        let str = obj.ToString()
-                                        select str).ToArray();
-                    }
-                }
-                if (properties.GetProperties("cmis:foreignChangeToken").Count > 0)
-                {
-                    meta.ForeignChangeToken = properties.GetProperties("cmis:foreignChangeToken").Values.First().Value.ToString();
-                }
+                Condition = new List<DialogExpressionCondition>()
+                        {
+                            DialogExpressionCondition.Create("DWDOCID", objectId )
+                        },
+                Count = 1
+            };
+
+            var queryResult = dialog.Query.PostToDialogExpressionRelationForDocumentsQueryResult(q);
+
+            if (queryResult.Items.Count() == 0)
+            {
+                throw cmisFaultType.CreateNotFoundException(objectId);
             }
             else
             {
-                if (properties.GetProperties("cmis:description").Count > 0)
+                Document doc = queryResult.Items.FirstOrDefault();
+
+                List<DocumentIndexField> metavalues = new List<DocumentIndexField>();
+
+                if (properties.Count > 0)
                 {
-                    meta.Description = properties.GetProperties("cmis:description").Values.First().Value.ToString();
-                }
-                if (properties.GetProperties("patorg:akte").Count > 0)
-                {
-                    object[] objs = properties.GetProperties("patorg:akte").Values.First().Values;
-                    if (objs is null)
+                    if (properties.GetProperties("docuware:metavalues").Count > 0)
                     {
-                        meta.Akte = null;
+                        object[] metas = properties.GetProperties("docuware:metavalues").First().Value.Values;
+
+                        foreach (object s in metas)
+                        {
+                            String[] metavals = System.Convert.ToString(s).Split('=');
+
+                            metavalues.Add(DocumentIndexField.Create(metavals[0], metavals[1]));
+                        }
                     }
-                    else
-                    {
-                        meta.Akte = (from obj in properties.GetProperties("patorg:akte").Values.First().Values
-                                     let str = obj.ToString()
-                                     select str).ToArray();
-                    }
+
+                    
                 }
+
+
             }
 
-            set_DocumentMetadata_Internal(objectId, meta);
         }
 
         #endregion

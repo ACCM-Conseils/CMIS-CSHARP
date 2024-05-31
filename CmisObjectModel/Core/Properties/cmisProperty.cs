@@ -30,6 +30,7 @@ using cac = CmisObjectModel.Attributes.CmisTypeInfoAttribute;
 // ***********************************************************************************************************************
 using CmisObjectModel.Common;
 using Microsoft.VisualBasic.CompilerServices;
+using Newtonsoft.Json.Linq;
 
 namespace CmisObjectModel.Core.Properties
 {
@@ -557,8 +558,10 @@ namespace CmisObjectModel.Core.Properties
                     if (_values == null)
                         return null;
                     else
-                        return ((from value in _values
-                                select value).Cast<TProperty[]>().ToArray());
+                        /*return ((from value in _values
+                                select value).Cast<TProperty[]>().ToArray());*/
+                        return (from value in _values
+                                select (object)value).ToArray();
                 }
                 set
                 {

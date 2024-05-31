@@ -19,13 +19,13 @@ namespace CmisServer
         public string DescriptionPwc;
 
         /// <summary>
-   /// Value of Property "patorg:akte" for the latest Version
+   /// Value of Property "docuware:metavalues" for the latest Version
    /// </summary>
    /// <remarks></remarks>
         public string[] Akte;
 
         /// <summary>
-   /// Value of the Property "patorg:akte" for the Private Working Copy (PWC)
+   /// Value of the Property "docuware:metavalues" for the Private Working Copy (PWC)
    /// </summary>
    /// <remarks></remarks>
         public string[] AktePwc;

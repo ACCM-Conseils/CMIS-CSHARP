@@ -14,6 +14,7 @@ using CmisObjectModel.Common.Generic;
 using CmisObjectModel.Core;
 using CmisObjectModel.Core.Collections;
 using CmisObjectModel.Core.Definitions.Types;
+using CmisObjectModel.Core.Properties;
 using CmisObjectModel.Core.Security;
 using CmisObjectModel.Messaging;
 using CmisObjectModel.Messaging.Responses;
@@ -524,15 +525,13 @@ namespace CmisServer
 
             if (newDocument.GetProperties("docuware:metavalues").Count > 0)
             {
-                var pairs = newDocument.GetProperties("docuware:metavalues").First().Value;
+                object[] metas = newDocument.GetProperties("docuware:metavalues").First().Value.Values;
 
-                String[] metavals = pairs.Value.ToString().Split('|');
-
-                foreach(string val in metavals)
+                foreach(object s in metas)
                 {
-                    string[] indexes = val.Split('=');
+                    String[] metavals = System.Convert.ToString(s).Split('=');
 
-                    metavalues.Add(DocumentIndexField.Create(indexes[0], indexes[1]));
+                    metavalues.Add(DocumentIndexField.Create(metavals[0], metavals[1]));
                 }
             }
 

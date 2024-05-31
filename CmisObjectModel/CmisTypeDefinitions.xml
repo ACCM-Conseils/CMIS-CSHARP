@@ -468,7 +468,7 @@
       <OriginalElementTypeName />
       <CustomOriginalElementTypeName />
       <CustomElementTypeName />
-    </MemberDefinition>
+    </MemberDefinition>    
     <MemberDefinition>
       <MemberName>uri</MemberName>
       <RefPKey>cmis:enumPropertyType</RefPKey>
@@ -476,6 +476,20 @@
       <IsRequired>true</IsRequired>
       <State>inUse</State>
       <OrderIndex>7</OrderIndex>
+      <SerializeAsElement>true</SerializeAsElement>
+      <CustomMemberName />
+      <IsReadOnly>false</IsReadOnly>
+      <OriginalElementTypeName />
+      <CustomOriginalElementTypeName />
+      <CustomElementTypeName />
+    </MemberDefinition>
+    <MemberDefinition>
+      <MemberName>string[]</MemberName>
+      <RefPKey>cmis:enumPropertyType</RefPKey>
+      <IsArray>true</IsArray>
+      <IsRequired>true</IsRequired>
+      <State>inUse</State>
+      <OrderIndex>8</OrderIndex>
       <SerializeAsElement>true</SerializeAsElement>
       <CustomMemberName />
       <IsReadOnly>false</IsReadOnly>
