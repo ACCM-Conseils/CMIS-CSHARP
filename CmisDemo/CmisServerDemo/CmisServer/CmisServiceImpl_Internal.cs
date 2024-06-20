@@ -10,6 +10,8 @@ using CmisObjectModel.Core;
 using CmisObjectModel.Core.Collections;
 using CmisObjectModel.Core.Security;
 using CmisObjectModel.Messaging;
+using CmisObjectModel.Messaging.Requests;
+using CmisServer;
 using DocuWare.Platform.ServerClient;
 using DocuWare.Services.Http;
 using iTextSharp.text;
@@ -202,6 +204,52 @@ namespace CmisServer
             return obj;
         }
 
+        public CmisObjectModel.ServiceModel.cmisObjectType get_Fake_Object_Internal(String repositoryId, String query)
+        {
+            CmisObjectModel.ServiceModel.cmisObjectType obj = null;
+
+            int index = query.IndexOf("=");
+
+            String toFind = query.Remove(0, index + 1);
+
+            String[] indexValue = toFind.Replace(" ", "").Split('=');
+
+            var fileCabinets = org.GetFileCabinetsFromFilecabinetsRelation().FileCabinet;
+
+            var defaultBasket = fileCabinets.FirstOrDefault(f => !f.IsBasket && f.Id == repositoryId);
+
+            var dialogInfoItems = defaultBasket.GetDialogInfosFromSearchesRelation();
+            var dialog = dialogInfoItems.Dialog.FirstOrDefault(m => m.IsDefault).GetDialogFromSelfRelation();
+
+            var q = new DialogExpression()
+            {
+                Condition = new List<DialogExpressionCondition>()
+                        {
+                            DialogExpressionCondition.Create(indexValue[0], indexValue[1])
+                        },
+                Count = 10000
+            };
+
+            var queryResult = dialog.Query.PostToDialogExpressionRelationForDocumentsQueryResult(q);
+
+            List<string> metastring = new List<string>();
+
+            var count = 0;
+
+            foreach (Document idx in queryResult.Items)
+            {
+                string meta = "DOCID=" + idx.Id.ToString();
+
+                metastring.Add(meta);
+            }
+
+            obj = get_Fake_Object_InternalFromDocuware();
+
+            obj.Properties.GetProperties("docuware:resultlist").First().Value.Values = metastring.ToArray();
+
+            return obj;
+        }
+
         public CmisObjectModel.ServiceModel.cmisObjectType get_Object_InternalFromDocuware(Document d)
         {
 
@@ -239,6 +287,45 @@ namespace CmisServer
             obj.ContentStreamId = doc.Id.ToString();
 
             obj.ChangeToken = doc.LastModified.Ticks.ToString();
+
+            obj.AllowableActions.CanDeleteObject = true;
+            obj.AllowableActions.CanUpdateProperties = true;
+            obj.AllowableActions.CanSetContentStream = true;
+            obj.AllowableActions.CanCancelCheckOut = true;
+            obj.AllowableActions.CanCheckIn = true;
+
+            CompleteObject(obj);
+
+            return obj;
+        }
+
+        public CmisObjectModel.ServiceModel.cmisObjectType get_Fake_Object_InternalFromDocuware()
+        {
+            var serializer = new System.Xml.Serialization.XmlSerializer(typeof(CmisObjectModel.ServiceModel.cmisObjectType));
+            string xml = System.IO.File.ReadAllText(Helper.FindXmlPath("document.xml"));
+            CmisObjectModel.ServiceModel.cmisObjectType obj = (CmisObjectModel.ServiceModel.cmisObjectType)serializer.Deserialize(new System.IO.StringReader(xml));
+
+            obj.Name = "Liste de recherche";
+            obj.ObjectId = "0";
+            obj.Description = "Liste de recherche";
+
+            obj.CreatedBy = "Unknown";
+            obj.CreationDate = DateTime.Now.ToUniversalTime();
+            obj.LastModifiedBy = "Unknown";
+            obj.LastModificationDate = DateTime.Now.ToUniversalTime();
+
+            obj.IsPrivateWorkingCopy = false;
+            obj.IsLatestVersion = true;
+            obj.IsMajorVersion = true;
+            obj.IsLatestMajorVersion = true;
+            obj.VersionLabel = "1";
+            obj.VersionSeriesId = "1";
+
+            obj.IsVersionSeriesCheckedOut = false;
+
+            obj.CheckinComment = "";
+
+            obj.ChangeToken = DateTime.Now.Ticks.ToString();
 
             obj.AllowableActions.CanDeleteObject = true;
             obj.AllowableActions.CanUpdateProperties = true;

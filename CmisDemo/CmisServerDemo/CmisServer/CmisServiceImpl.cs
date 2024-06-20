@@ -853,36 +853,10 @@ namespace CmisServer
                     //MDPH51
                     //int index = query.IndexOf("mdata");
 
-                    int index = query.IndexOf("=");
-
-                    String toFind = query.Remove(0, index + 1);
-
-                    String[] indexValue = toFind.Replace(" ", "").Split('=');
-
-                    var fileCabinets = org.GetFileCabinetsFromFilecabinetsRelation().FileCabinet;
-
-                    var defaultBasket = fileCabinets.FirstOrDefault(f => !f.IsBasket && f.Id == repositoryId);
-
-                    var dialogInfoItems = defaultBasket.GetDialogInfosFromSearchesRelation();
-                    var dialog = dialogInfoItems.Dialog.FirstOrDefault(m => m.IsDefault).GetDialogFromSelfRelation();
-
-                    var q = new DialogExpression()
-                    {
-                        Condition = new List<DialogExpressionCondition>()
-                        {
-                            DialogExpressionCondition.Create(indexValue[0], indexValue[1])
-                        },
-                        Count = 1
-                    };
-
-                    var queryResult = dialog.Query.PostToDialogExpressionRelationForDocumentsQueryResult(q);
-
-                    Document d = queryResult.Items.FirstOrDefault();
-
                     CmisObjectModel.ServiceModel.cmisObjectListType results = new CmisObjectModel.ServiceModel.cmisObjectListType();
 
                     List<CmisObjectModel.ServiceModel.cmisObjectType> files = new List<CmisObjectModel.ServiceModel.cmisObjectType>();
-                    files.Add(get_Object_InternalFromDocuware(d));
+                    files.Add(get_Fake_Object_Internal(repositoryId, query));
 
                     results.Objects = files.ToArray();
 
