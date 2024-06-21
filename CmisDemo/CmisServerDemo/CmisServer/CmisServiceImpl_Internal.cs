@@ -24,12 +24,8 @@ namespace CmisServer
 
     public partial class CmisServiceImpl
     {
-
-        private static string _repourl = String.Format(System.Configuration.ConfigurationManager.AppSettings["url"], System.Configuration.ConfigurationManager.AppSettings["domain"]);
         private static string _repoid = System.Configuration.ConfigurationManager.AppSettings["repoid"];
-        private static string _reponame = System.Configuration.ConfigurationManager.AppSettings["reponame"];
         private static string _folder = System.Configuration.ConfigurationManager.AppSettings["folder"];
-        private static string _errorfile = System.Configuration.ConfigurationManager.AppSettings["errorfile"];
         private static string _logfile = System.Configuration.ConfigurationManager.AppSettings["logfile"];
 
         private static cmisRepositoryInfoType _repository = default;

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using CmisObjectModel.Client;
@@ -77,18 +79,41 @@ namespace CmisServer
    /// </remarks>
         public override bool ValidateUserNamePassword(string userName, string password)
         {
-            // Log_Internal("ValidateUser", userName)
-
-            conn = Helpers.Docuware.Connect(userName, password);
-
-            if(conn != null)
+            try
             {
-                org = Helpers.Docuware.GetOrganization(conn);
+                Log_Internal("ValidateUserNamePassword");
 
-                return true;
+                ServicePointManager.ServerCertificateValidationCallback += (send, cert, chain, sslPolicyErrors) => true;
+
+                System.Net.ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
+
+                Log_Internal(ConfigurationManager.AppSettings["URLDocuware"]);
+
+                conn = Helpers.Docuware.Connect(userName, password);
+
+                if (conn != null)
+                {
+                    Log_Internal("Connexion OK");
+
+                    org = Helpers.Docuware.GetOrganization(conn);
+
+                    Log_Internal("Org OK");
+
+                    return true;
+                }
+                else
+                {
+                    Log_Internal("Connexion en erreur");
+
+                    return false;
+                }
             }
-            else
+            catch (Exception ex)
+            {
+                Log_Internal(ex.Message);
+
                 return false;
+            }
         }
 
         #endregion
@@ -846,6 +871,9 @@ namespace CmisServer
 
         protected override Result<CmisObjectModel.ServiceModel.cmisObjectListType> Query(string repositoryId, string query, bool searchAllVersions, enumIncludeRelationships? includeRelationships, string renditionFilter, bool includeAllowableActions, long? maxItems, long? skipCount)
         {
+            Log_Internal("Query");
+            Log_Internal(query);
+
             if (query.ToLower().Contains("cmis:document"))
             {
                 if (query.ToLower().Contains("where"))
